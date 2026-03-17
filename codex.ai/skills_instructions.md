@@ -14,6 +14,7 @@ If the user names a skill or the task clearly matches a listed skill description
 
 ### How to use skills
 
+- Announce which skill is being used and why in one short line.
 - Open the relevant `SKILL.md` and read only enough to follow the workflow.
 - Resolve relative paths from the skill directory first.
 - Load only the specific referenced files needed for the request.
