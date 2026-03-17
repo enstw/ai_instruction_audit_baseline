@@ -1,6 +1,4 @@
-# Embedded Tool Definitions
-
-## Available Sub-Agents
+# Available Sub-Agents
 
 Sub-agents are specialized expert agents. Each sub-agent is available as a tool of the same name. You MUST delegate tasks to the sub-agent with the most relevant expertise.
 
@@ -46,6 +44,8 @@ You have access to the following specialized skills. To activate a skill and rec
     <location>$HOME/.npm-global/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/skills/builtin/skill-creator/SKILL.md</location>
   </skill>
 </available_skills>
+
+# Operational Guidelines
 
 ## Tool Usage
 - **Parallelism:** Execute multiple independent tool calls in parallel when feasible (i.e. searching the codebase).

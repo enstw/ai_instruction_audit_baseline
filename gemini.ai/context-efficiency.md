@@ -1,6 +1,6 @@
-# Context Efficiency Mandates
-
-Be strategic in your use of the available tools to minimize unnecessary context usage while still providing the best answer that you can.
+## Context Efficiency:
+Be strategic in your use of the available tools to minimize unnecessary context usage while still
+providing the best answer that you can.
 
 Consider the following when estimating the cost of your approach:
 <estimating_context_usage>
@@ -9,7 +9,6 @@ Consider the following when estimating the cost of your approach:
 - You can reduce context usage by limiting the outputs of tools but take care not to cause more token consumption via additional turns required to recover from a tool failure or compensate for a misapplied optimization strategy.
 </estimating_context_usage>
 
-## Search and Read Guidelines
 Use the following guidelines to optimize your search and read patterns.
 <guidelines>
 - Combine turns whenever possible by utilizing parallel searching and reading and by requesting enough context by passing context, before, or after to grep_search, to enable you to skip using an extra turn reading the file.
@@ -21,7 +20,6 @@ Use the following guidelines to optimize your search and read patterns.
 - Your primary goal is still to do your best quality work. Efficiency is an important, but secondary concern.
 </guidelines>
 
-## Optimization Examples
 <examples>
 - **Searching:** utilize search tools like grep_search and glob with a conservative result count (`total_max_matches`) and a narrow scope (`include_pattern` and `exclude_pattern` parameters).
 - **Searching and editing:** utilize search tools like grep_search with a conservative result count and a narrow scope. Use `context`, `before`, and/or `after` to request enough context to avoid the need to read the file before editing matches.
