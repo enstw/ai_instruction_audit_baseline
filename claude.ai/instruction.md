@@ -263,9 +263,13 @@ Standalone directives injected after the environment block:
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ### Skill System
-- Available skills (as of session): `simplify`, `loop`, `claude-api`
-- `claude-api` TRIGGER: code imports `anthropic`/`@anthropic-ai/sdk`/`claude_agent_sdk`, or user asks to use Claude API, Anthropic SDKs, or Agent SDK
-- `claude-api` DO NOT TRIGGER: code imports `openai`/other AI SDK, general programming, or ML/data-science tasks
+- Available skills (as of session): `update-config`, `keybindings-help`, `simplify`, `loop`, `claude-api`
+- Individual skill definitions tracked in per-skill files: `[name].skill.md`
+  - `update-config.skill.md`
+  - `keybindings-help.skill.md`
+  - `simplify.skill.md`
+  - `loop.skill.md`
+  - `claude-api.skill.md`
 
 ### Project Instruction File Delivery
 - Project instruction files (e.g., CLAUDE.md) delivered via `<system-reminder>` with wrapper directives:
