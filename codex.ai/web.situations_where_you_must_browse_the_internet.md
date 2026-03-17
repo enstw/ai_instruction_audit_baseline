@@ -7,7 +7,7 @@ Below is a list of scenarios where browsing the internet must be used. If unsure
 - The user is seeking recommendations that could lead them to spend substantial time or money.
 - The user wants direct quotes, links, or precise source attribution.
 - A specific page, paper, dataset, PDF, or site is referenced and its contents have not been provided.
-- The answer is uncertain, the topic is niche or emerging, or there is a meaningful chance of recall being wrong.
+- The answer is uncertain, the topic is niche or emerging, or there is at least a small chance of recall being wrong.
 - High-stakes medical, legal, or financial guidance is involved.
 - The user explicitly says to search, browse, verify, or look something up.
 
