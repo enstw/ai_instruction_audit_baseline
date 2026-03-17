@@ -9,9 +9,9 @@ Do not carry a skill across turns unless it is mentioned again.
 
 ### Available skills
 
-- `openai-docs`: use when the user asks how to build with OpenAI products or APIs and needs up-to-date official documentation with citations, model guidance, or prompt-upgrade guidance.
-- `skill-creator`: use when the user wants to create or update a skill.
-- `skill-installer`: use when the user wants to list or install skills.
+- `openai-docs`: use when the user asks how to build with OpenAI products or APIs and needs up-to-date official documentation with citations, model guidance, or prompt-upgrade guidance; prefer bundled references and restrict fallback browsing to official OpenAI domains.
+- `skill-creator`: use when the user wants to create or update a skill that extends Codex capabilities with specialized knowledge, workflows, or tool integrations.
+- `skill-installer`: use when the user wants to list or install skills, including curated skills and GitHub repo paths.
 
 ### How to use skills
 
@@ -24,4 +24,5 @@ Do not carry a skill across turns unless it is mentioned again.
 - If a skill cannot be applied cleanly, state the issue briefly and continue with the best fallback.
 - Keep context small and avoid loading unrelated references.
 - If the skill includes scripts or templates, prefer using them instead of recreating the content manually.
+- Avoid deep reference-chasing unless blocked and note which variant or reference set was chosen when multiple variants exist.
 </skills_instructions>

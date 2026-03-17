@@ -16,8 +16,8 @@ Escalation requests:
 - Do not use `prefix_rule` for destructive commands, and avoid overly broad prefixes.
 - Do not use a `prefix_rule` for heredoc or herestring commands.
 - If a command segment requires escalation, request approval directly through the tool call rather than trying to work around the restriction.
+- Approved command prefixes may already exist and should be honored when present.
 
-Approved command prefixes may exist in the environment and should be honored when present.
-The environment may also provide writable-root details and preapproved command prefixes, including selected `git` and `gh` subcommands.
+The environment may also provide writable-root details and preapproved command prefixes.
 Environment-specific writable roots and approved prefixes should be generalized in the baseline rather than preserved as user-specific concrete values.
 </permissions instructions>

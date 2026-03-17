@@ -1,7 +1,7 @@
 Source layer: embedded tool-definition block.
 
 <situations_where_you_must_browse_the_internet>
-Below is a list of scenarios where browsing the internet must be used. If unsure, bias toward browsing.
+Below is a list of scenarios where browsing the internet must be used. If unsure or on the fence, bias toward browsing.
 
 - The information could have changed recently, including news, prices, laws, schedules, product specs, sports scores, economic indicators, political figures, company figures, rules, regulations, standards, software libraries, exchange rates, and recommendations.
 - The user is seeking recommendations that could lead them to spend substantial time or money.
