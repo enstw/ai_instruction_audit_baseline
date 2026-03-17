@@ -28,6 +28,7 @@ Usage guidance:
 - Use `response_length` to control result verbosity.
 - `search_query` may contain at most 4 queries in a call, and if it has more than 3 queries then `response_length` must be `medium` or `long`.
 - If an accidental `web.run` call would otherwise be made, send an empty search query instead.
+- Search-query recency and domain filters may be used when appropriate.
 
 ### Decision boundary
 
@@ -55,7 +56,7 @@ Tool definitions:
 - `exec_command`: runs a shell command in a PTY or with plain pipes and supports working directory, timeout, token limit, shell selection, TTY allocation, and optional escalation metadata.
 - `write_stdin`: writes to an existing `exec_command` session and returns recent output.
 - `update_plan`: updates the task plan; at most one step may be `in_progress`.
-- `request_user_input`: available only in Plan mode and returns one to three short multiple-choice questions.
+- `request_user_input`: available only in Plan mode and returns one to three short multiple-choice questions; it is unavailable in Default mode.
 - `view_image`: views a local image from the filesystem by path.
 - `spawn_agent`, `send_input`, `resume_agent`, `wait_agent`, `close_agent`: sub-agent orchestration tools, with delegation allowed only when the user explicitly asks for sub-agents, delegation, or parallel agent work.
 - `apply_patch`: freeform patch tool for manual file edits; it must not be called in parallel with other tools.

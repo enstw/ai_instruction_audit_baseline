@@ -4,7 +4,7 @@ Source layer: runtime injection.
 ## Skills
 
 A skill is a set of local instructions stored in a `SKILL.md` file.
-If the user names a skill or the task clearly matches a listed skill description, use that skill for the turn.
+If the user names a skill, including by plain text or `$SkillName`, or the task clearly matches a listed skill description, use that skill for the turn.
 Do not carry a skill across turns unless it is mentioned again.
 
 ### Available skills
@@ -23,4 +23,5 @@ Do not carry a skill across turns unless it is mentioned again.
 - If multiple skills apply, use the minimal set that covers the task and state the order.
 - If a skill cannot be applied cleanly, state the issue briefly and continue with the best fallback.
 - Keep context small and avoid loading unrelated references.
+- If the skill includes scripts or templates, prefer using them instead of recreating the content manually.
 </skills_instructions>
