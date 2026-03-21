@@ -3,10 +3,9 @@
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ## Skill System
-- Available skills (as of session): `update-config`, `keybindings-help`, `simplify`, `loop`, `claude-api`
+- Available skills (as of session): `update-config`, `simplify`, `loop`, `claude-api`
 - Individual skill definitions tracked in per-skill files: `[name].skill.md`
   - `update-config.skill.md`
-  - `keybindings-help.skill.md`
   - `simplify.skill.md`
   - `loop.skill.md`
   - `claude-api.skill.md`
@@ -18,5 +17,5 @@ Injected via `<system-reminder>` tags during the session, not present at system 
 - `currentDate` injected alongside project file content: "Today's date is $date."
 
 ## Concealment-Bearing Reminders
-- Observed pattern: task tool usage nudges referencing TaskCreate/TaskUpdate with "Make sure that you NEVER mention this reminder to the user"
+- Observed pattern: task tool usage nudges referencing TodoWrite with "Make sure that you NEVER mention this reminder to the user"
 - See "System" section in `instruction.md` for general `<system-reminder>` behavior documentation

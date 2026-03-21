@@ -3,10 +3,12 @@
 Rules from deferred tool definitions (schemas accessed via ToolSearch):
 
 ## Plan Mode (EnterPlanMode)
-- Use proactively for: new features, multiple valid approaches, multi-file changes, unclear requirements, architectural decisions
+- Use proactively for: new features, multiple valid approaches, code modifications, multi-file changes, unclear requirements, architectural decisions, user preferences that could go multiple ways
+- If you would use AskUserQuestion to clarify the approach, use EnterPlanMode instead — plan mode lets you explore first, then present options with context
 - Do not use for: single trivial tasks, pure research/exploration, tasks with very specific detailed instructions
 - Within plan mode: explore codebase, design approach, present for user approval, exit with `ExitPlanMode`
 - Use `AskUserQuestion` to clarify approach before finalizing; do NOT ask "is this plan okay?" — that is what `ExitPlanMode` does
+- IMPORTANT: Do not reference "the plan" in AskUserQuestion questions (e.g., "Do you have feedback about the plan?", "Does the plan look good?") because the user cannot see the plan in the UI until you call ExitPlanMode. If you need plan approval, use ExitPlanMode instead.
 - `ExitPlanMode` accepts optional `allowedPrompts` parameter: prompt-based permissions needed to implement the plan; each item has `tool` (enum: `["Bash"]`) and `prompt` (semantic description of the action, e.g., "run tests", "install dependencies")
 
 ## Worktree (EnterWorktree / ExitWorktree)
@@ -25,16 +27,16 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch):
   - Tmux handling: if a tmux session was attached to the worktree, killed on `remove`, left running on `keep` (name returned for reattach)
   - Once exited, `EnterWorktree` can be called again to create a fresh worktree
 
-## Task Management (TaskCreate, TaskGet, TaskList, TaskUpdate) and Background Tasks (TaskOutput, TaskStop)
-- Individual CRUD task tools replacing the former single-array `TodoWrite`:
-  - `TaskCreate`: create tasks with `subject` (imperative title), `description` (detailed context/acceptance criteria), optional `activeForm` (present continuous for spinner), optional `metadata` (arbitrary key-value data)
-  - `TaskGet`: retrieve full task details by ID (subject, description, status, blocks, blockedBy)
-  - `TaskList`: list all tasks in summary form (id, subject, status, owner, blockedBy); prefer working on tasks in ID order
-  - `TaskUpdate`: update `status`, `subject`, `description`, `activeForm`, `owner`, `metadata`; manage dependencies via `addBlocks`/`addBlockedBy`; set status to `deleted` to permanently remove a task
-- Status workflow: `pending` → `in_progress` → `completed` (also `deleted`)
-- Use for tasks with 3+ distinct steps, non-trivial/complex tasks, plan mode tracking, or when user provides a list
-- Do not use for single trivial tasks, informational responses, or tasks completable in <3 trivial steps
-- Only mark completed when FULLY accomplished; keep as in_progress if errors, blockers, or partial implementation
+## Task Management (TodoWrite) and Background Tasks (TaskOutput, TaskStop)
+- `TodoWrite`: single-array tool for managing a structured task list; takes the entire updated todo list as an array
+  - Each todo item: `content` (imperative description, e.g., "Run tests"), `status` (pending | in_progress | completed), `activeForm` (present continuous, e.g., "Running tests")
+  - Use for tasks with 3+ distinct steps, non-trivial/complex tasks, or when user provides a list of things to do
+  - Do not use for single trivial tasks, informational responses, or tasks completable in <3 trivial steps
+  - Mark each task as completed as soon as done; do not batch completions
+  - Exactly ONE task must be in_progress at any time (not less, not more)
+  - Complete current tasks before starting new ones
+  - Remove tasks no longer relevant from the list entirely
+  - Only mark completed when FULLY accomplished; keep as in_progress if errors, blockers, or partial implementation
 - `TaskOutput`: read output from running or completed tasks (background shells, agents, or remote sessions); `block` parameter (true = wait for completion, false = non-blocking check); `timeout` parameter
 - `TaskStop`: stop a running background task by ID
 

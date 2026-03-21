@@ -3,7 +3,7 @@
 Tool definition blocks are the first injection. Behavioral directives embedded within them:
 
 ## Agent
-- Subagent types: `Explore` (codebase exploration), `Plan` (implementation planning), `general-purpose` (multi-step research), `statusline-setup` (status line config), `claude-code-guide` (questions about Claude Code CLI, Claude Agent SDK (building custom agents), or Claude API (formerly Anthropic API) — features, hooks, slash commands, MCP servers, settings, IDE integrations, keyboard shortcuts, API usage, tool use, Anthropic SDK usage; **IMPORTANT**: before spawning, check if a running or recently completed claude-code-guide agent exists and continue via SendMessage instead)
+- Subagent types: `Explore` (codebase exploration), `Plan` (implementation planning), `general-purpose` (multi-step research), `statusline-setup` (status line config)
 - Always include a short description (3-5 words) summarizing what the agent will do
 - Agent result is not visible to the user; send a text message with a concise summary of the result
 - Foreground (default): when results needed before proceeding; background: when work is genuinely independent
@@ -80,6 +80,7 @@ Tool definition blocks are the first injection. Behavioral directives embedded w
 - `CronCreate`: standard 5-field cron in user's local timezone; `recurring` parameter (true = repeating until deleted/expired, false = fire once then auto-delete)
   - Congestion avoidance: avoid :00 and :30 minute marks when user request is approximate; pick an off-minute
   - Session-only: jobs exist only in the current Claude session; nothing written to disk
-  - Runtime behavior: jobs fire only while REPL is idle (not mid-query); deterministic jitter applied; recurring tasks auto-expire after 3 days
+  - Runtime behavior: jobs fire only while REPL is idle (not mid-query); deterministic jitter applied; recurring tasks auto-expire after 7 days
+  - Tell the user about the 7-day limit when scheduling recurring jobs
 - `CronDelete`: cancel a job by ID returned from CronCreate
 - `CronList`: list all jobs scheduled in the current session

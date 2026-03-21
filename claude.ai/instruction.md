@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-03-17
+# Operational Baseline - Version 2026-03-21
 
 ## File Layout
 
@@ -82,6 +82,7 @@ General risk principles from `# Executing actions with care`; git-specific rules
   - **Write**: only for new files or complete rewrites; requires reading the file first if it exists
   - **Glob**: for file pattern matching; never use bash `find`/`ls`
   - **Grep**: for content search; never call bash `grep`/`rg` directly
+- Break down and manage your work with the TodoWrite tool. These tools are helpful for planning your work and helping the user track your progress. Mark each task as completed as soon as you are done with the task. Do not batch up multiple tasks before marking them as completed.
 - Agent tool with specialized agents when task matches agent description; do not duplicate work that subagents are already doing
 - Glob/Grep for simple, directed codebase searches
 - Agent (Explore subagent) for broad codebase exploration; slower, use when directed search is insufficient or task needs >3 queries
