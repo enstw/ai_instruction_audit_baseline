@@ -1,0 +1,10 @@
+.DS_Store
+*.swp
+*~
+.tmp/
+
+# Files copied in by the runner workflow at audit time; they live in the runner repo.
+AUDIT_RULE.md
+CLAUDE.md
+AGENTS.md
+GEMINI.md
