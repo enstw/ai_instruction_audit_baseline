@@ -10,7 +10,8 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `NotebookEdit`
 - `PushNotification`
 - `RemoteTrigger`
-- `TaskCreate`, `TaskGet`, `TaskList`, `TaskOutput`, `TaskStop`, `TaskUpdate`
+- `TodoWrite`
+- `TaskOutput`, `TaskStop`
 - `WebFetch`, `WebSearch`
 - MCP integrations (`mcp__claude_ai_Gmail__*`, `mcp__claude_ai_Google_Calendar__*`, `mcp__claude_ai_Google_Drive__*`)
 
@@ -47,22 +48,28 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
   - Tmux: killed on `remove`, left running on `keep` (name returned for reattach)
   - Once exited, `EnterWorktree` can be called again to create a fresh worktree
 
-## Task Management (TaskCreate / TaskGet / TaskList / TaskUpdate)
-- `TaskCreate`: structured task list for the current coding session; helps track progress and demonstrate thoroughness
-  - Use proactively for: complex multi-step tasks (3+ steps), non-trivial/complex tasks, plan mode, when the user explicitly requests a todo list, when the user provides multiple tasks, after receiving new instructions, when starting work on a task (mark `in_progress` BEFORE beginning), after completing a task
-  - Do NOT use for: a single straightforward task, trivial tasks, <3 trivial steps, purely conversational/informational
-  - Fields: `subject` (brief actionable imperative title, e.g., "Fix authentication bug in login flow"), `description`, `activeForm` (optional present continuous shown in spinner — falls back to `subject`), `metadata`
-  - All tasks created with status `pending`
-- `TaskGet`: retrieve full task by ID — `subject`, `description`, `status`, `blocks`, `blockedBy`
-  - After fetching, verify `blockedBy` is empty before beginning work
-- `TaskList`: list all tasks in summary form — `id`, `subject`, `status`, `owner`, `blockedBy`
-  - "Prefer working on tasks in ID order (lowest ID first) when multiple tasks are available — earlier tasks often set up context for later ones"
-- `TaskUpdate`:
-  - Mark resolved when fully accomplished; if errors/blockers/partial implementation, keep as `in_progress`; create a new task describing what needs to be resolved when blocked
-  - Status workflow: `pending` → `in_progress` → `completed`; use `deleted` to permanently remove
-  - Never mark `completed` if tests are failing, implementation partial, unresolved errors, missing files/dependencies
-  - Read latest state via `TaskGet` before updating
-  - Fields updatable: `status`, `subject`, `description`, `activeForm`, `owner`, `metadata`, `addBlocks`, `addBlockedBy`
+## TodoWrite
+- "Use this tool to create and manage a structured task list for your current coding session. This helps you track progress, organize complex tasks, and demonstrate thoroughness to the user. It also helps the user understand the progress of the task and overall progress of their requests."
+- Use proactively for: complex multi-step tasks (3+ steps), non-trivial/complex tasks requiring careful planning or multiple operations, when the user explicitly requests a todo list, when the user provides multiple tasks (numbered or comma-separated), immediately after receiving new instructions (capture as todos), when starting work on a task (mark `in_progress` BEFORE beginning — only one in_progress at a time ideally), after completing a task (mark completed and add follow-up tasks discovered during implementation)
+- Do NOT use for: a single straightforward task, trivial tasks, tasks completable in <3 trivial steps, purely conversational/informational requests
+- "When in doubt, use this tool. Being proactive with task management demonstrates attentiveness and ensures you complete all requirements successfully."
+- Item fields:
+  - `content` (required): imperative form describing what needs to be done (e.g., "Run tests", "Build the project")
+  - `activeForm` (required): present continuous form shown during execution (e.g., "Running tests", "Building the project")
+  - `status` (required): `pending`, `in_progress`, or `completed`
+- Task management rules:
+  - Update task status in real-time as you work
+  - Mark tasks complete IMMEDIATELY after finishing (don't batch completions)
+  - Exactly ONE task must be `in_progress` at any time (not less, not more)
+  - Complete current tasks before starting new ones
+  - Remove tasks that are no longer relevant from the list entirely
+- Task completion requirements:
+  - ONLY mark a task `completed` when FULLY accomplished
+  - If errors, blockers, or cannot finish — keep as `in_progress`
+  - When blocked, create a new task describing what needs to be resolved
+  - Never mark `completed` if: tests are failing, implementation is partial, unresolved errors, couldn't find necessary files/dependencies
+- Task breakdown: create specific, actionable items; break complex tasks into smaller, manageable steps; use clear, descriptive task names; always provide both `content` and `activeForm`
+- Description includes worked examples (dark mode toggle feature, function rename across project, e-commerce features list, React performance optimization) and counter-examples (Hello World, git command explanation, single-comment edit, single npm install)
 
 ## Background Tasks (TaskOutput / TaskStop)
 - `TaskOutput` is marked DEPRECATED in its description: background tasks return their output file path in the tool result; you receive a `<task-notification>` with the same path on completion

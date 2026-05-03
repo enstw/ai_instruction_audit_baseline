@@ -5,18 +5,21 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 - `Agent`
 - `Bash`
 - `Edit`
+- `Glob`
+- `Grep`
 - `Read`
 - `ScheduleWakeup`
 - `Skill`
 - `ToolSearch`
 - `Write`
 
-(`Glob`, `Grep`, and the Cron tools are NOT embedded — `find`/`grep` are expected via Bash, and Cron tools moved to deferred.)
+(Cron tools are NOT embedded — they are deferred and loaded via `ToolSearch`.)
 
 Behavioral directives embedded within the tool descriptions:
 
 ## Agent
-- Subagent types listed: `claude-code-guide`, `Explore` (read-only fast search; prefer `Bash` for known targets), `general-purpose` (multi-step research, default if `subagent_type` omitted), `Plan` (architecture/implementation plan), `statusline-setup`
+- Subagent types listed: `Explore` (fast read-only search agent for locating code — find files by pattern, grep symbols/keywords, answer "where is X defined / which files reference Y"; do NOT use for code review, design-doc auditing, cross-file consistency checks, or open-ended analysis — reads excerpts not whole files and will miss content past its read window; specify search breadth: `quick`, `medium`, or `very thorough`), `general-purpose` (researching complex questions, searching for code, multi-step tasks; default if `subagent_type` omitted; use when not confident a keyword/file lookup will hit on first few tries), `Plan` (software architect — design implementation plans; returns step-by-step plans, identifies critical files, considers architectural trade-offs), `statusline-setup` (configure the user's Claude Code status line setting)
+- "If the target is already known, use the direct tool: Read for a known path, the Grep tool for a specific symbol or string. Reserve this tool for open-ended questions that span the codebase, or tasks that match an available agent type."
 - Always include a short description (3-5 words) summarizing what the agent will do
 - Send multiple Agents in a single message when their work is independent — they run concurrently
 - Agent result is not visible to the user; send a text message with a concise summary of the result
@@ -35,7 +38,14 @@ Behavioral directives embedded within the tool descriptions:
 
 ## Bash
 - Reserved for system commands and terminal operations requiring shell execution
-- Avoid using Bash to run `cat`, `head`, `tail`, `sed`, `awk`, or `echo` unless explicitly instructed or after verifying no dedicated tool fits — use Read / Edit / Write / direct text output instead
+- Avoid using Bash to run `find`, `grep`, `cat`, `head`, `tail`, `sed`, `awk`, or `echo` unless explicitly instructed or after verifying no dedicated tool fits — use the appropriate dedicated tool for a better experience:
+  - File search: use `Glob` (NOT `find` or `ls`)
+  - Content search: use `Grep` (NOT `grep` or `rg`)
+  - Read files: use `Read` (NOT `cat`/`head`/`tail`)
+  - Edit files: use `Edit` (NOT `sed`/`awk`)
+  - Write files: use `Write` (NOT `echo >` / `cat <<EOF`)
+  - Communication: output text directly (NOT `echo`/`printf`)
+- "While the Bash tool can do similar things, it's better to use the built-in tools as they provide a better user experience and make it easier to review tool calls and give permission."
 - Working directory persists between commands; shell environment initialized from the user's profile (bash or zsh); shell state does not persist between commands
 - Before creating new directories or files, first run `ls` to verify parent directory exists
 - Quote file paths containing spaces with double quotes
@@ -118,6 +128,28 @@ Behavioral directives embedded within the tool descriptions:
 - Prefer Edit for modifying existing files (sends only diff); only use Write for new files or complete rewrites
 - NEVER create documentation files (`*.md`) or README files unless explicitly requested
 - Only use emojis if user explicitly requests
+
+## Glob
+- Fast file pattern matching tool that works with any codebase size
+- Supports glob patterns like `**/*.js` or `src/**/*.ts`
+- Returns matching file paths sorted by modification time
+- Use this tool when you need to find files by name patterns
+- "When you are doing an open ended search that may require multiple rounds of globbing and grepping, use the Agent tool instead"
+- Parameters: `pattern` (required), `path` (optional — directory to search; omit for default; do not pass `"undefined"` or `"null"`)
+
+## Grep
+- Powerful search tool built on ripgrep
+- "ALWAYS use Grep for search tasks. NEVER invoke `grep` or `rg` as a Bash command. The Grep tool has been optimized for correct permissions and access."
+- Supports full regex syntax (e.g., `log.*Error`, `function\s+\w+`)
+- Filter files with `glob` parameter (e.g., `*.js`, `**/*.tsx`) or `type` parameter (e.g., `js`, `py`, `rust`)
+- Output modes: `content` (matching lines), `files_with_matches` (paths only — default), `count` (match counts)
+- Use Agent tool for open-ended searches requiring multiple rounds
+- Pattern syntax uses ripgrep (not grep) — literal braces need escaping (use `interface\{\}` to find `interface{}` in Go code)
+- Multiline matching: by default patterns match within single lines only; for cross-line patterns like `struct \{[\s\S]*?field`, use `multiline: true`
+- Context flags (require `output_mode: content`): `-A`, `-B`, `-C`, `context`
+- `-n` line numbers (default true), `-i` case-insensitive
+- `head_limit` (default 250; pass `0` for unlimited — use sparingly), `offset` to skip first N
+- `path` defaults to current working directory
 
 ## Skill
 - `skill` parameter: exact name of an available skill (no leading slash); plugin-namespaced skills use the `plugin:skill` form
