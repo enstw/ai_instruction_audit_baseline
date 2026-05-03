@@ -1,13 +1,13 @@
 # Skill: update-config
 
-Configure the Claude Code harness via settings.json.
+Configure the Claude Code harness via `settings.json`.
 
 ## When to invoke
-- Automated behaviors ("from now on when X", "each time X", "whenever X", "before/after X") — these require hooks in settings.json; memory/preferences cannot fulfill them
+- Automated behaviors ("from now on when X", "each time X", "whenever X", "before/after X") — these require hooks configured in `settings.json`; the harness executes hooks, not Claude, so memory/preferences cannot fulfill them
 - Permissions ("allow X", "add permission", "move permission to")
 - Environment variables ("set X=Y")
 - Hook troubleshooting
-- Any changes to settings.json / settings.local.json
+- Any changes to `settings.json` / `settings.local.json` files
 
 ## Examples
 - "allow npm commands"
@@ -17,4 +17,4 @@ Configure the Claude Code harness via settings.json.
 - "when claude stops show X"
 
 ## Notes
-- For simple settings like theme/model, use Config tool instead
+- For simple settings like theme/model, suggest the `/config` command
