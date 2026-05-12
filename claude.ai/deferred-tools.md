@@ -2,7 +2,6 @@
 
 Rules from deferred tool definitions (schemas accessed via ToolSearch). Active deferred-tools list this session:
 
-- `AskUserQuestion`
 - `CronCreate`, `CronDelete`, `CronList`
 - `EnterPlanMode`, `ExitPlanMode`
 - `EnterWorktree`, `ExitWorktree`
@@ -78,16 +77,6 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
   - For remote_agent tasks: prefer `Read` on the output file path
   - `block=true` (default) waits for completion; `block=false` non-blocking; `timeout` max 600000 ms
 - `TaskStop`: stops a running background task by `task_id`
-
-## AskUserQuestion
-- 1-4 questions per invocation, each with 2-4 options
-- Each question: `question` text, `header` (max 12 chars chip/tag label), `options` (label + description), `multiSelect` (boolean)
-- Auto "Other" option always appended for custom text input
-- "If you recommend a specific option, make that the first option in the list and add '(Recommended)' at the end of the label"
-- `preview` (optional, on options): for ASCII mockups, code snippets, diagram variations, config examples; rendered as markdown in monospace box; triggers side-by-side layout (vertical option list left, preview right); single-select only — do not use for simple preference questions where labels and descriptions suffice
-- `annotations`: optional per-question user annotations (notes on selections, including selected preview)
-- `metadata`: optional tracking/analytics data (e.g., `source: "remember"`)
-- Plan mode: use to clarify requirements / choose between approaches BEFORE finalizing the plan; do NOT ask "Is my plan ready?" — use `ExitPlanMode`; do not reference "the plan" in question text since user cannot see it until `ExitPlanMode`
 
 ## NotebookEdit
 - Completely replaces the contents of a specific cell in a Jupyter notebook (.ipynb file) with new source

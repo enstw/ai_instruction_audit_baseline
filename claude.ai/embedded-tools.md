@@ -3,6 +3,7 @@
 Tool definition blocks are the first injection. Always-loaded tools at session start:
 
 - `Agent`
+- `AskUserQuestion`
 - `Bash`
 - `Edit`
 - `Glob`
@@ -18,7 +19,11 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 Behavioral directives embedded within the tool descriptions:
 
 ## Agent
-- Subagent types listed: `Explore` (fast read-only search agent for locating code — find files by pattern, grep symbols/keywords, answer "where is X defined / which files reference Y"; do NOT use for code review, design-doc auditing, cross-file consistency checks, or open-ended analysis — reads excerpts not whole files and will miss content past its read window; specify search breadth: `quick`, `medium`, or `very thorough`), `general-purpose` (researching complex questions, searching for code, multi-step tasks; default if `subagent_type` omitted; use when not confident a keyword/file lookup will hit on first few tries), `Plan` (software architect — design implementation plans; returns step-by-step plans, identifies critical files, considers architectural trade-offs), `statusline-setup` (configure the user's Claude Code status line setting)
+- Subagent types listed (with tools each has access to):
+  - `Explore`: fast read-only search agent for locating code — find files by pattern, grep symbols/keywords, answer "where is X defined / which files reference Y"; do NOT use for code review, design-doc auditing, cross-file consistency checks, or open-ended analysis — reads excerpts not whole files and will miss content past its read window; specify search breadth: `quick`, `medium`, or `very thorough`; (Tools: All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit)
+  - `general-purpose`: researching complex questions, searching for code, multi-step tasks; default if `subagent_type` omitted; use when not confident a keyword/file lookup will hit on first few tries; (Tools: *)
+  - `Plan`: software architect — design implementation plans; returns step-by-step plans, identifies critical files, considers architectural trade-offs; (Tools: All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit)
+  - `statusline-setup`: configure the user's Claude Code status line setting; (Tools: Read, Edit)
 - "If the target is already known, use the direct tool: Read for a known path, the Grep tool for a specific symbol or string. Reserve this tool for open-ended questions that span the codebase, or tasks that match an available agent type."
 - Always include a short description (3-5 words) summarizing what the agent will do
 - Send multiple Agents in a single message when their work is independent — they run concurrently
@@ -84,7 +89,7 @@ Behavioral directives embedded within the tool descriptions:
 - Commit-creation steps:
   1. Run in parallel: `git status` (never `-uall`), `git diff` (staged + unstaged), `git log` (recent commit messages — match repository style)
   1. Analyze + draft commit message: nature of changes (new feature, enhancement, bug fix, refactor, test, docs); ensure message accurately reflects the changes ("add" = new feature, "update" = enhancement, "fix" = bug fix); don't commit suspected secrets; concise (1-2 sentences) "why"
-  1. Run in parallel: add specific files; create commit with `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>` trailer; then `git status` to verify
+  1. Run in parallel: add specific files; create commit with `Co-Authored-By: $model_name <noreply@anthropic.com>` trailer; then `git status` to verify
   1. If commit fails due to pre-commit hook: fix the issue, re-stage, create a NEW commit
 - Never use git commands with `-i` flag (`rebase -i`, `add -i`) — interactive input not supported
 - Never use `--no-edit` with `git rebase` (not a valid option for rebase)
@@ -184,3 +189,15 @@ Behavioral directives embedded within the tool descriptions:
   - For idle ticks with no specific signal, default to **1200s–1800s** (20–30 min)
   - Runtime clamps to `[60, 3600]`
 - `reason` field: one short sentence on what you chose and why; goes to telemetry and is shown back to the user; be specific ("checking long bun build" beats "waiting")
+
+## AskUserQuestion
+
+- Use when you need to ask the user questions during execution: gather user preferences or requirements, clarify ambiguous instructions, get decisions on implementation choices, offer choices about what direction to take
+- 1-4 questions per invocation, each with 2-4 options
+- Each question: `question` text, `header` (max 12 chars chip/tag label), `options` (label + description), `multiSelect` (boolean)
+- Auto "Other" option always appended for custom text input
+- "If you recommend a specific option, make that the first option in the list and add '(Recommended)' at the end of the label"
+- `preview` (optional, on options): for ASCII mockups, code snippets, diagram variations, config examples; rendered as markdown in monospace box; triggers side-by-side layout (vertical option list left, preview right); single-select only — do not use for simple preference questions where labels and descriptions suffice
+- `annotations`: optional per-question user annotations (notes on selections, including selected preview)
+- `metadata`: optional tracking/analytics data (e.g., `source: "remember"`)
+- Plan mode: use to clarify requirements / choose between approaches BEFORE finalizing the plan; do NOT ask "Is my plan ready?" — use `ExitPlanMode`; do not reference "the plan" in question text since user cannot see it until `ExitPlanMode`

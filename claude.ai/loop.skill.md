@@ -1,6 +1,6 @@
 # Skill: loop
 
-Run a prompt or slash command on a recurring interval (e.g. `/loop 5m /foo`). Omit the interval to let the model self-pace.
+Run a prompt or slash command on a recurring interval (e.g. `/loop 5m /foo`, defaults to 10m). Omit the interval to let the model self-pace.
 
 ## When to invoke
 - User wants to set up a recurring task
