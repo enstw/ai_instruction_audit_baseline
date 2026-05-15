@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-05-12
+# Operational Baseline - Version 2026-05-15
 
 ## File Layout
 
@@ -80,7 +80,7 @@ General risk principles from `# Executing actions with care`; git-specific rules
 ## Using Your Tools
 
 - Prefer dedicated tools over Bash when one fits (Read, Edit, Write, Glob, Grep) — reserve Bash for shell-only operations
-- Use `TodoWrite` to plan and track work; mark each task completed as soon as it's done — don't batch
+- Use `TaskCreate` to plan and track work; mark each task completed as soon as it's done — don't batch
 - Multiple tool calls in a single response when calls are independent of each other; maximize parallel tool calls for efficiency; if calls depend on previous calls' values, run sequentially instead
 
 ## Tone and Style
@@ -172,7 +172,7 @@ Injected as an environment block near the end of the system prompt:
 - **Model family**: most recent is Claude 4.X. Model IDs — Opus 4.7: `claude-opus-4-7`, Sonnet 4.6: `claude-sonnet-4-6`, Haiku 4.5: `claude-haiku-4-5-20251001`
 - **AI app default**: when building AI applications, default to the latest and most capable Claude models
 - **Surfaces**: Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains)
-- **Fast mode**: Fast mode for Claude Code uses Claude Opus 4.6 with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`; only available on Opus 4.6
+- **Fast mode**: Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`; available on Opus 4.6 and Opus 4.7
 
 ## Context Management
 

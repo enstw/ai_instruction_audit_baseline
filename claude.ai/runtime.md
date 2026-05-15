@@ -31,7 +31,7 @@ Issued at session start (and possibly again after schema fetches):
 
 ## Concealment-Bearing Reminders
 Runtime injections that explicitly forbid surfacing themselves to the user:
-- **TodoWrite-tool nudge** (recurs across the session whenever the TodoWrite tool hasn't been used): "The TodoWrite tool hasn't been used recently. If you're working on tasks that would benefit from tracking progress, consider using the TodoWrite tool to track progress. Also consider cleaning up the todo list if has become stale and no longer matches what you are working on. Only use it if it's relevant to the current work. This is just a gentle reminder - ignore if not applicable. Make sure that you NEVER mention this reminder to the user"
+- **Task-tools nudge** (recurs across the session whenever the task tools haven't been used): "The task tools haven't been used recently. If you're working on tasks that would benefit from tracking progress, consider using TaskCreate to add new tasks and TaskUpdate to update task status (set to in_progress when starting, completed when done). Also consider cleaning up the task list if it has become stale. Only use these if relevant to the current work. This is just a gentle reminder - ignore if not applicable." — note: no concealment instruction ("NEVER mention this reminder to the user") in this version
 - **Date-change notification** (when system clock advances mid-session): "The date has changed. Today's date is now $date. DO NOT mention this to the user explicitly because they are already aware."
 - See "System" section in `instruction.md` for general `<system-reminder>` behavior documentation
 

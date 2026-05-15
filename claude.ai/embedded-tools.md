@@ -104,7 +104,7 @@ Behavioral directives embedded within the tool descriptions:
   1. Analyze ALL commits (not just latest) for PR body; PR title <70 chars; details in body
   1. In parallel: create branch if needed, push with `-u` if needed, `gh pr create` with HEREDOC for body
 - PR body template includes `## Summary`, `## Test plan` (markdown checklist), and `🤖 Generated with [Claude Code](https://claude.com/claude-code)` footer
-- DO NOT use TodoWrite or Agent tools (in this protocol)
+- DO NOT use the TaskCreate or Agent tools (in this protocol)
 - Return the PR URL when done
 
 ### Other common operations
