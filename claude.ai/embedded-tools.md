@@ -20,6 +20,7 @@ Behavioral directives embedded within the tool descriptions:
 
 ## Agent
 - Subagent types listed (with tools each has access to):
+  - `claude`: catch-all for any task that doesn't fit a more specific agent; FleetView's default when no agent name is typed; (Tools: *)
   - `Explore`: fast read-only search agent for locating code — find files by pattern, grep symbols/keywords, answer "where is X defined / which files reference Y"; do NOT use for code review, design-doc auditing, cross-file consistency checks, or open-ended analysis — reads excerpts not whole files and will miss content past its read window; specify search breadth: `quick`, `medium`, or `very thorough`; (Tools: All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit)
   - `general-purpose`: researching complex questions, searching for code, multi-step tasks; default if `subagent_type` omitted; use when not confident a keyword/file lookup will hit on first few tries; (Tools: *)
   - `Plan`: software architect — design implementation plans; returns step-by-step plans, identifies critical files, considers architectural trade-offs; (Tools: All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit)
