@@ -3,17 +3,19 @@
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ## Skill System
-- Available system-built skills observed: `update-config`, `keybindings-help`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`
+- Available system-built skills observed: `update-config`, `keybindings-help`, `verify`, `code-review`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`
 - Native Claude Code commands surfaced in the same skill list as bare slash commands (no full skill definition): `init`, `review`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
 - Individual skill definitions tracked in per-skill files: `[name].skill.md`
   - `update-config.skill.md`
   - `keybindings-help.skill.md`
-  - `simplify.skill.md`
+  - `verify.skill.md`
+  - `code-review.skill.md`
   - `fewer-permission-prompts.skill.md`
   - `loop.skill.md`
   - `schedule.skill.md`
   - `claude-api.skill.md`
+  - `run.skill.md`
 
 ## Deferred-Tools Availability Reminder
 Issued at session start (and possibly again after schema fetches):
