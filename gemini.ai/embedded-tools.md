@@ -19,9 +19,7 @@ When you delegate, the sub-agent's entire execution is consolidated into a singl
 <available_subagents>
   <subagent>
     <name>codebase_investigator</name>
-    <description>The specialized tool for codebase analysis, architectural mapping, and understanding system-wide dependencies.
-    Invoke this tool for tasks like vague requests, bug root-cause analysis, system refactoring, comprehensive feature implementation or to answer questions about the codebase that require investigation.
-    It returns a structured report with key file paths, symbols, and actionable architectural insights.</description>
+    <description>The specialized tool for codebase analysis, architectural mapping, and understanding system-wide dependencies. Invoke this tool for tasks like vague requests, bug root-cause analysis, system refactoring, comprehensive feature implementation or to answer questions about the codebase that require investigation. It returns a structured report with key file paths, symbols, and actionable architectural insights.</description>
   </subagent>
   <subagent>
     <name>cli_help</name>
