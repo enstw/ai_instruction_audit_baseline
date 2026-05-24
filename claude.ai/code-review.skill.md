@@ -1,3 +1,3 @@
 # Skill: code-review
 
-Review changed code for reuse, quality, and efficiency, then fix any issues found.
+Review the current diff for correctness bugs at the given effort level (low/medium: fewer, high-confidence findings; high→max: broader coverage, may include uncertain findings). Pass --comment to post findings as inline PR comments.

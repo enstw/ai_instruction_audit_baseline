@@ -198,7 +198,7 @@ Behavioral directives embedded within the tool descriptions:
 - Each question: `question` text, `header` (max 12 chars chip/tag label), `options` (label + description), `multiSelect` (boolean)
 - Auto "Other" option always appended for custom text input
 - "If you recommend a specific option, make that the first option in the list and add '(Recommended)' at the end of the label"
-- `preview` (optional, on options): for ASCII mockups, code snippets, diagram variations, config examples; rendered as markdown in monospace box; triggers side-by-side layout (vertical option list left, preview right); single-select only — do not use for simple preference questions where labels and descriptions suffice
+- `preview` (optional, on options): for ASCII mockups, code snippets, diagram variations, config examples; rendered as markdown in monospace box; multi-line text with newlines is supported; triggers side-by-side layout (vertical option list left, preview right); single-select only — do not use for simple preference questions where labels and descriptions suffice
 - `annotations`: optional per-question user annotations (notes on selections, including selected preview)
 - `metadata`: optional tracking/analytics data (e.g., `source: "remember"`)
 - Plan mode: use to clarify requirements / choose between approaches BEFORE finalizing the plan; do NOT ask "Is my plan ready?" — use `ExitPlanMode`; do not reference "the plan" in question text since user cannot see it until `ExitPlanMode`
