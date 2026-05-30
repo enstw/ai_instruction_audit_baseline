@@ -3,10 +3,11 @@
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ## Skill System
-- Available system-built skills observed: `update-config`, `keybindings-help`, `verify`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`
+- Available system-built skills observed: `deep-research`, `update-config`, `keybindings-help`, `verify`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`
 - Native Claude Code commands surfaced in the same skill list as bare slash commands (no full skill definition): `init`, `review`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
 - Individual skill definitions tracked in per-skill files: `[name].skill.md`
+  - `deep-research.skill.md`
   - `update-config.skill.md`
   - `keybindings-help.skill.md`
   - `verify.skill.md`
