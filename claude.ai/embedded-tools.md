@@ -12,6 +12,7 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 - `ScheduleWakeup`
 - `Skill`
 - `ToolSearch`
+- `Workflow`
 - `Write`
 
 (Cron tools are NOT embedded — they are deferred and loaded via `ToolSearch`.)
@@ -190,6 +191,74 @@ Behavioral directives embedded within the tool descriptions:
   - For idle ticks with no specific signal, default to **1200s–1800s** (20–30 min)
   - Runtime clamps to `[60, 3600]`
 - `reason` field: one short sentence on what you chose and why; goes to telemetry and is shown back to the user; be specific ("checking long bun build" beats "waiting")
+
+## Workflow
+
+- Execute a workflow script that orchestrates multiple subagents deterministically; runs in the background — returns immediately with a task ID; `<task-notification>` arrives on completion; use `/workflows` to watch live progress
+- **ONLY call when the user has explicitly opted into multi-agent orchestration**; workflows can spawn dozens of agents and consume large amounts of tokens — the user must request that scale, not have it inferred
+- Explicit opt-in triggers:
+  - The user included the keyword `"ultracode"` in their prompt (you'll see a system-reminder confirming it)
+  - Ultracode is on for the session (a system-reminder confirms it)
+  - The user directly asked you to run a workflow or use multi-agent orchestration in their own words (`"use a workflow"`, `"run a workflow"`, `"fan out agents"`, `"orchestrate this with subagents"`); the ask must be in the user's words — a task that would merely benefit from a workflow does not count
+  - The user invoked a skill or slash command whose instructions tell you to call Workflow
+  - The user asked you to run a specific named or saved workflow
+- For any other task — even one that would clearly benefit from parallelism — do NOT call this tool; use the Agent tool for individual subagents, or briefly describe what a workflow could do and ask the user; mention they can ask with `"use a workflow"` to skip the ask next time
+- When calling it, the right move is often **hybrid**: scout inline first (list files, scope the diff) to discover the work-list, then call Workflow to pipeline over it
+- Parameters: `script` (inline, max 524288 chars), `scriptPath` (file path; takes precedence), `name` (predefined workflow), `resumeFromRunId`, `args` (pass arrays/objects as actual JSON values — NOT JSON-encoded strings), `title`/`description` (ignored — set in meta block)
+- Every invocation automatically persists its script to a file under the session directory; to iterate, edit that file with Write/Edit and re-invoke with `{scriptPath: "<path>"}`
+
+### Script format rules
+- Must begin with `export const meta = { name, description, phases }` — a PURE LITERAL (no variables, function calls, spreads, or template interpolation); `name` and `description` required; `phases` optional (one entry per `phase()` call with `title`/`detail` fields; add `model` when a phase uses a specific model override); phase titles must match `phase()` call titles exactly
+- Script body is plain JavaScript, NOT TypeScript — type annotations, interfaces, and generics fail to parse
+- Script body runs in async context — use `await` directly
+- Standard JS built-ins available EXCEPT `Date.now()`/`Math.random()`/`new Date()` (they throw — would break resume); pass timestamps via `args`; vary randomness by varying agent prompt/label by index
+- No filesystem or Node.js API access in the script body
+
+### Script body hooks
+- `agent(prompt, opts?)` — spawn subagent; without `schema` returns final text; with `schema` (JSON Schema) forces `StructuredOutput` tool call and returns validated object — no parsing needed; returns `null` if user skips (filter with `.filter(Boolean)`); `opts`: `{label, phase, schema, model, isolation, agentType}`
+  - `opts.model`: optional override (`sonnet`/`opus`/`haiku`); omit unless highly confident a different tier fits — inherits session model by default
+  - `opts.isolation: "worktree"`: runs subagent in a fresh git worktree — EXPENSIVE (~200-500ms + disk per agent); use ONLY when agents mutate files in parallel; auto-removed if unchanged
+  - `opts.agentType`: custom subagent type from same registry as Agent tool; composes with `schema`
+- `pipeline(items, stage1, stage2, ...)` — run each item through all stages independently, NO barrier between stages; item A can be in stage 3 while item B is still in stage 1; **DEFAULT for multi-stage work**; wall-clock = slowest single-item chain; every stage callback receives `(prevResult, originalItem, index)`; a stage that throws drops that item to `null` and skips remaining stages
+- `parallel(thunks)` — barrier: awaits ALL thunks before returning; thunk that throws → `null` in result array (call never rejects); use `.filter(Boolean)` before using results; use ONLY when genuinely need all results together
+- `log(message)` — emit progress message to user (shown as narrator line above progress tree)
+- `phase(title)` — start new phase; subsequent `agent()` calls grouped under this title in progress display; use `opts.phase` inside `pipeline()`/`parallel()` stages to avoid races on the global phase state
+- `args` — value passed as Workflow's `args` input (undefined if not provided)
+- `budget` — `{total: number|null, spent(): number, remaining(): number}` — the turn's token target from user's `"+500k"`-style directive; `total` is `null` if no target; `spent()` counts output tokens across main loop and all workflows (shared pool); `remaining()` returns `max(0, total - spent())` or `Infinity` if no target; **hard ceiling, not advisory** — once `spent()` reaches `total`, further `agent()` calls throw; guard dynamic loops: `while (budget.total && budget.remaining() > 50_000) { ... }`
+- `workflow(nameOrRef, args?)` — run another workflow inline as a sub-step; pass name (string) or `{scriptPath}`; child shares concurrency cap, agent counter, abort signal, and token budget; its agents appear under a `"▸ name"` group in `/workflows`; nesting is one level only — `workflow()` inside a child throws; throws on unknown name / unreadable path / child syntax error
+
+### Concurrency
+- Concurrent `agent()` calls capped at `min(16, cpu cores - 2)` per workflow — excess calls queue and run as slots free up
+- Total agent count per workflow lifetime capped at 1000 (runaway-loop backstop)
+
+### Ultracode mode
+- When a system-reminder confirms ultracode is on, that opt-in is standing: author and run a workflow for every substantive task by default; goal is the most exhaustive, correct answer — token cost is not a constraint
+- For multi-phase work (understand → design → implement → review), run several workflows in sequence — one per phase — to stay in the loop between them
+- Solo only on conversational turns or trivial mechanical edits
+- When a reminder says ultracode is off, revert to the opt-in rule
+
+### DEFAULT: pipeline() over parallel()
+- `pipeline()` is the default; only use `parallel()` (barrier) when stage N genuinely needs cross-item context from all of stage N-1
+- Barrier IS correct: dedup/merge across full result set before expensive downstream work; early-exit when count is zero; stage N's prompt references "the other findings" for comparison
+- Barrier NOT justified by: "I need to flatten/map/filter first" (do it inside a pipeline stage); "the stages are conceptually separate"; "it's cleaner code" — barrier latency is real
+
+### Resume
+- Tool result includes a `runId`; to resume: relaunch with `Workflow({scriptPath, resumeFromRunId})`
+- Longest unchanged prefix of `agent()` calls returns cached results instantly; first edited/new call and everything after it runs live; same script + same args → 100% cache hit
+
+### Quality patterns
+- **Adversarial verify**: spawn N independent skeptics per finding, each prompted to REFUTE; kill finding if ≥ majority refute; prevents plausible-but-wrong findings from surviving
+- **Perspective-diverse verify**: give each verifier a distinct lens (correctness, security, perf, does-it-reproduce) when a finding can fail in more than one way
+- **Judge panel**: generate N independent attempts from different angles, score with parallel judges, synthesize from winner while grafting best ideas from runners-up
+- **Loop-until-dry**: keep spawning finders until K consecutive rounds return nothing new; dedup vs all `seen` (not just `confirmed`) to prevent convergence failure
+- **Multi-modal sweep**: parallel agents each searching a different way (by-container, by-content, by-entity, by-time) — each blind to others' findings
+- **Completeness critic**: final agent asks "what's missing — modality not run, claim unverified, source unread?" — its findings become next round of work
+- **No silent caps**: if a workflow bounds coverage (top-N, no-retry, sampling), `log()` what was dropped — silence reads as "covered everything" when it didn't
+
+### Subagents
+- Subagents are told their final text IS the return value (not a human-facing message) — they return raw data
+- For structured output, use `schema` option — validation at the tool-call layer; model retries on mismatch
+- Workflow agents can reach all session-connected MCP tools via `ToolSearch`; schemas load on demand per agent; interactively-authenticated MCP servers may be absent in headless/cron runs
 
 ## AskUserQuestion
 

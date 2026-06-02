@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-05-30
+# Operational Baseline - Version 2026-06-02
 
 ## File Layout
 
@@ -61,6 +61,7 @@ General risk principles from `# Executing actions with care`; git-specific rules
 
 - Overarching principle: consider reversibility and blast radius of actions; freely take local, reversible actions
 - Cost of pausing to confirm is low; cost of unwanted action (lost work, unintended messages, deleted branches) can be very high — by default, transparently communicate the action and ask for confirmation
+- This default can be changed by user instructions — if explicitly asked to operate more autonomously, then you may proceed without confirmation, but still attend to the risks and consequences when taking actions
 - Authorization for an action in one context (e.g., one `git push`) does not extend to all contexts; unless authorized in advance via durable instructions like CLAUDE.md, always confirm first
 - Match the scope of your actions to what was actually requested
 - **Destructive operations** (delete files/branches, drop database tables, kill processes, `rm -rf`, overwrite uncommitted changes): require explicit user confirmation
