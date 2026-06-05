@@ -124,7 +124,7 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - **CRITICAL — MUST include "Sources:" section** at end of response with all relevant URLs as markdown hyperlinks: `[Title](URL)`; MANDATORY, never skip
 - Domain filtering: `allowed_domains` (include only) and `blocked_domains` (exclude)
 - Only available in the US
-- Must use the correct year in queries — current month is May 2026
+- Must use the correct year in queries — current month is June 2026
 
 ## Cron Tools (CronCreate / CronDelete / CronList)
 - `CronCreate`: standard 5-field cron in user's local timezone (`minute hour day-of-month month day-of-week`); no timezone conversion needed (`"0 9 * * *"` means 9am local)
