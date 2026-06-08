@@ -1,15 +1,12 @@
 # Skill: claude-api
 
-Build, debug, and optimize Claude API / Anthropic SDK apps. Apps built with this skill should include prompt caching. Also handles migrating existing Claude API code between Claude model versions (4.5 → 4.6, 4.6 → 4.7, retired-model replacements).
+Reference for the Claude API / Anthropic SDK — model ids, pricing, params, streaming, tool use, MCP, agents, caching, token counting, model migration.
 
-## When to invoke (TRIGGER)
-- Code imports `anthropic` or `@anthropic-ai/sdk`
-- User asks for the Claude API, Anthropic SDK, or Managed Agents
-- User adds/modifies/tunes a Claude feature (caching, thinking, compaction, tool use, batch, files, citations, memory) or model (Opus/Sonnet/Haiku) in a file
-- Questions about prompt caching / cache hit rate in an Anthropic SDK project
+## TRIGGER — read BEFORE opening the target file; don't skip because it "looks like a one-liner" — whenever:
+- The prompt names Claude/Anthropic in any form (Claude, Anthropic, Opus, Sonnet, Haiku, `anthropic`, `@anthropic-ai`, `claude-*`, `us.anthropic.*`, `[1m]`)
+- The user asks about an LLM (pricing/model choice/limits/caching) — never answer from memory
+- The task is LLM-shaped with provider unstated (agent/MCP/tool-definition/multi-agent/RAG/LLM-judge/computer-use; generate/summarize/extract/classify/rewrite/converse over NL; debugging refusals/cutoffs/streaming/tool-calls/tokens)
 
-## Do NOT invoke (SKIP)
-- File imports `openai` or another provider's SDK
-- Filename like `*-openai.py` / `*-generic.py`
-- Provider-neutral code
-- General programming or ML tasks
+## SKIP only when another provider is being worked on (overrides all triggers):
+- OpenAI/GPT/Gemini/Llama/Mistral/Cohere/Ollama named in the query
+- OR `grep -rE 'openai|langchain_openai|google.generativeai|genai|mistralai|cohere|ollama'` over the project hits (run this grep FIRST if no provider named — don't Read the file)
