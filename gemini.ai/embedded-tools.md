@@ -47,6 +47,11 @@ You have access to the following specialized skills. To activate a skill and rec
     <description>Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Gemini CLI's capabilities with specialized knowledge, workflows, or tool integrations.</description>
     <location>/usr/local/lib/node_modules/@google/gemini-cli/bundle/builtin/skill-creator/SKILL.md</location>
   </skill>
+  <skill>
+    <name>antigravity-support</name>
+    <description>Use when the user asks questions, seeks help, or requests instructions related to installing, setting up, or migrating to Antigravity CLI. This skill provides the latest up to date details, requirements, and commands sourced from the official Antigravity CLI documentation.</description>
+    <location>/usr/local/lib/node_modules/@google/gemini-cli/bundle/builtin/antigravity-support/SKILL.md</location>
+  </skill>
 </available_skills>
 
 # Operational Guidelines
