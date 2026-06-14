@@ -1,9 +1,9 @@
 # Skill: schedule
 
-Create, update, list, or run scheduled remote agents (routines) that execute on a cron schedule.
+Create, update, list, or run scheduled cloud agents (routines) that execute on a cron schedule.
 
 ## When to invoke
-- User wants to schedule a recurring remote agent
+- User wants to schedule a recurring cloud agent
 - Set up automated tasks
 - Create a cron job for Claude Code
 - Manage scheduled agents / routines
