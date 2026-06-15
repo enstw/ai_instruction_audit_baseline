@@ -17,16 +17,3 @@ ALWAYS START your thought with recalling critical instructions 1 and 2. In parti
 CRITICAL INSTRUCTION 1: ...
 CRITICAL INSTRUCTION 2: ...'.
 </EPHEMERAL_MESSAGE>
-
-# Session Context
-
-You may receive dynamic session context injected by the runtime at the start of the interaction. This includes:
-
-<session_context>
-Information about the current OS, date, workspace directories, and directory structure.
-<loaded_context>
-<project_context>
-Context loaded from local instruction files like `GEMINI.md`.
-</project_context>
-</loaded_context>
-</session_context>
