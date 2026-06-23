@@ -10,9 +10,20 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `NotebookEdit`
 - `PushNotification`
 - `RemoteTrigger`
+- `SendMessage`
 - `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`
 - `TaskOutput` (DEPRECATED), `TaskStop`
 - `WebFetch`, `WebSearch`
+
+## SendMessage
+- Sends a message to another agent
+- `to`: recipient — teammate name (e.g., `"researcher"`) or `"main"` (the main conversation, for background subagents only)
+- `message` (required): plain text message content
+- `summary` (optional, required when message is a string): 5-10 word summary shown as a preview in the UI; max 200 chars
+- Plain text output is NOT visible to other agents — to communicate, you MUST call this tool
+- Messages from teammates are delivered automatically; you don't check an inbox
+- Refer to active teammates by name; to resume a completed background agent, use the `agentId` (format `a...-...`) from its spawn result
+- When relaying, don't quote the original — it's already rendered to the user
 
 ## DesignSync
 - Reads and updates the user's claude.ai/design design-system projects through their claude.ai login
