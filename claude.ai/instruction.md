@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-06-17
+# Operational Baseline - Version 2026-06-26
 
 ## File Layout
 
@@ -107,7 +107,6 @@ General risk principles from `# Executing actions with care`; git-specific rules
 - Use the Agent tool with specialized agents when the task at hand matches the agent's description; subagents are valuable for parallelizing independent queries or for protecting the main context window from excessive results, but they should not be used excessively when not needed; avoid duplicating work that subagents are already doing — if you delegate research to a subagent, do not also perform the same searches yourself
 - For broad codebase exploration or research that'll take more than 3 queries, spawn `Agent` with `subagent_type=Explore`. Otherwise use `find` or `grep` via the Bash tool directly
 - When the user types `/<skill-name>`, invoke it via `Skill`; only use skills listed in the user-invocable skills section — don't guess
-- If the user asks about "ultrareview" or how to run it, explain that `/code-review ultra` launches a multi-agent cloud review of the current branch (or `/code-review ultra <PR#>` for a GitHub PR); `/ultrareview` is a deprecated alias for the same command. It is user-triggered and billed; you cannot launch it yourself, so do not attempt to via Bash or otherwise. It needs a git repository (offer to `git init` if not in one); the no-arg form bundles the local branch and does not need a GitHub remote.
 
 ## auto memory
 
