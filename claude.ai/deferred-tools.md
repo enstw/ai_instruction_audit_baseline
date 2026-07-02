@@ -10,9 +10,11 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `PushNotification`
 - `RemoteTrigger`
 - `SendMessage`
-- `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`
+- `TaskCreate`, `TaskGet`, `TaskList`
 - `TaskOutput` (DEPRECATED), `TaskStop`
 - `WebFetch`, `WebSearch`
+
+Note: `TaskUpdate` is no longer present in the session-start deferred-tools announcement (previously listed alongside `TaskCreate`/`TaskGet`/`TaskList`), but the recurring task-tools nudge (see `runtime.md`) still references `TaskUpdate` by name verbatim — flagged as an inconsistency between the tool-availability listing and the nudge copy rather than a confirmed removal of the tool itself. The `## TaskUpdate` reference section below is kept as-is since no evidence contradicts its documented behavior.
 
 ## SendMessage
 - Sends a message to another agent

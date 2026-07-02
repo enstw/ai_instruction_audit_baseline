@@ -6,6 +6,7 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 - `Bash`
 - `Edit`
 - `Read`
+- `ReportFindings`
 - `ScheduleWakeup`
 - `Skill`
 - `ToolSearch`
@@ -55,6 +56,7 @@ Behavioral directives embedded within the tool descriptions:
 - Maintain working directory using absolute paths; avoid `cd` (use only when explicitly requested); never prepend `cd <current-directory>` to a `git` command — git already operates on the working tree, and the compound triggers a permission prompt
 - Optional `timeout` in milliseconds (max 600000 / 10 minutes); default 120000
 - `run_in_background`: notification on completion; no need to use `&`
+- `dangerouslyDisableSandbox` (boolean): set true to dangerously override sandbox mode and run commands without sandboxing
 - Write a clear, concise description; never use words like "complex" or "risk" — just describe what it does
   - Simple commands (git, npm, standard CLI): brief (5-10 words)
   - Harder-to-parse commands (piped, obscure flags): add enough context to clarify
@@ -151,6 +153,14 @@ Behavioral directives embedded within the tool descriptions:
   - `select:Read,Edit,Grep` — fetch these exact tools by name
   - `notebook jupyter` — keyword search, up to `max_results` best matches
   - `+slack send` — require "slack" in the name, rank by remaining terms
+
+## ReportFindings
+- Report code-review findings as a typed list so the host UI can render them
+- Use only when the active code-review instructions say to report findings with this tool; otherwise follow whatever output format those instructions specify
+- Call once with the verified findings ranked most-severe first (empty array if nothing survived verification); do not also print the findings as text
+- When re-reporting after applying fixes (only if the apply instructions ask for it), set `outcome` on each finding to what actually happened
+- `findings` (max 32 items): each item has `file` (required, repo-relative path), `summary` (required, one-sentence statement of the defect), `failure_scenario` (required, concrete inputs/state → wrong output/crash), `line` (optional, 1-indexed), `verdict` (optional enum: `CONFIRMED`/`PLAUSIBLE` — set when a verify pass ran, absent on inline-only reviews), `outcome` (optional enum: `fixed`/`skipped`/`no_change_needed` — set ONLY when re-reporting after applying fixes)
+- `level` (optional enum: `low`/`medium`/`high`/`xhigh`/`max`): effort level the review ran at
 
 ## ScheduleWakeup
 - Schedule when to resume work in `/loop` dynamic mode — when the user invoked `/loop` without an interval, asking you to self-pace iterations of a specific task
