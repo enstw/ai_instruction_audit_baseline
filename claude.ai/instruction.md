@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-07-02
+# Operational Baseline - Version 2026-07-05
 
 ## File Layout
 
@@ -130,6 +130,7 @@ Four structured types, each stored in its own file with frontmatter (`name`, `de
 Two-step process:
 1. Write memory to its own file (e.g., `user_role.md`, `feedback_testing.md`) using frontmatter format with `name`, `description`, `type`, then content
 1. Add a one-line pointer in `MEMORY.md` (index only)
+- In the body, link to related memories with `[[name]]`, where `name` is the other memory's `name:` slug; link liberally — a `[[name]]` that doesn't match an existing memory yet is fine, it marks something worth writing later, not an error
 
 ### What NOT to Save
 - Code patterns, conventions, architecture, file paths, project structure (derivable from code)
