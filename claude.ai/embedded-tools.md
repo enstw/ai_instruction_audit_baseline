@@ -19,12 +19,8 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 Behavioral directives embedded within the tool descriptions:
 
 ## Agent
-- Subagent types listed (with tools each has access to):
-  - `claude`: catch-all for any task that doesn't fit a more specific agent; FleetView's default when no agent name is typed; (Tools: *)
-  - `Explore`: Fast read-only search agent for locating code. Use it to find files by pattern (eg. `src/components/**/*.tsx`), grep for symbols or keywords (eg. `API endpoints`), or answer "where is X defined / which files reference Y." Do NOT use it for code review, design-doc auditing, cross-file consistency checks, or open-ended analysis — it reads excerpts rather than whole files and will miss content past its read window. When calling, specify search breadth: `quick` for a single targeted lookup, `medium` for moderate exploration, or `very thorough` to search across multiple locations and naming conventions. (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
-  - `general-purpose`: researching complex questions, searching for code, multi-step tasks; default if `subagent_type` omitted; use when not confident a keyword/file lookup will hit on first few tries; (Tools: *)
-  - `Plan`: software architect — design implementation plans; returns step-by-step plans, identifies critical files, considers architectural trade-offs; (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
-  - `statusline-setup`: configure the user's Claude Code status line setting; (Tools: Read, Edit)
+- The tool's own description does not enumerate subagent types inline — it says: "Available agent types are listed in <system-reminder> messages in the conversation." The type list itself is a separate runtime-layer injection; see "Subagent Types Reminder" in `runtime.md` (currently: `claude`, `Explore`, `general-purpose`, `Plan`, `statusline-setup`, with tools each has access to)
+- "When using the Agent tool, specify a subagent_type parameter to select which agent type to use. If omitted, the general-purpose agent is used."
 - "If the target is already known, use the direct tool: Read for a known path, `grep` via the Bash tool for a specific symbol or string. Reserve this tool for open-ended questions that span the codebase, or tasks that match an available agent type."
 - Always include a short description (3-5 words) summarizing what the agent will do
 - Send multiple Agents in a single message when their work is independent — they run concurrently
@@ -119,6 +115,7 @@ Behavioral directives embedded within the tool descriptions:
 - Cannot read directories — use the registered shell tool
 - Empty file → system reminder warning in place of contents
 - "You will regularly be asked to read screenshots. If the user provides a path to a screenshot, ALWAYS use this tool to view the file at the path. This tool will work with all temporary file paths."
+- Do NOT re-read a file you just edited to verify — Edit/Write would have errored if the change failed, and the harness tracks file state for you
 
 ## Edit
 - Must Read the file at least once in the conversation before editing — tool errors otherwise
@@ -137,6 +134,7 @@ Behavioral directives embedded within the tool descriptions:
 ## Skill
 - `skill` parameter: exact name of an available skill (no leading slash); plugin-namespaced skills use the `plugin:skill` form
 - `args`: optional arguments
+- Some skills are scoped to a directory: their name is prefixed with the directory (e.g. `apps/web:deploy`) and their description says which directory they apply to; when a skill name has both a scoped and an unscoped variant, pick by the files you are working on — if the files are under a variant's directory, invoke that variant (most specific directory wins); otherwise invoke the unscoped one
 - Available skills are listed in system-reminder messages
 - Only invoke a skill that appears in that list, or one the user explicitly typed as `/<name>` — never guess or invent a skill name from training data
 - BLOCKING REQUIREMENT: when a skill matches the user's request, invoke the Skill tool BEFORE generating any other response about the task
@@ -159,7 +157,7 @@ Behavioral directives embedded within the tool descriptions:
 - Use only when the active code-review instructions say to report findings with this tool; otherwise follow whatever output format those instructions specify
 - Call once with the verified findings ranked most-severe first (empty array if nothing survived verification); do not also print the findings as text
 - When re-reporting after applying fixes (only if the apply instructions ask for it), set `outcome` on each finding to what actually happened
-- `findings` (max 32 items): each item has `file` (required, repo-relative path), `summary` (required, one-sentence statement of the defect), `failure_scenario` (required, concrete inputs/state → wrong output/crash), `line` (optional, 1-indexed), `verdict` (optional enum: `CONFIRMED`/`PLAUSIBLE` — set when a verify pass ran, absent on inline-only reviews), `outcome` (optional enum: `fixed`/`skipped`/`no_change_needed` — set ONLY when re-reporting after applying fixes)
+- `findings` (max 32 items): each item has `file` (required, repo-relative path), `summary` (required, one-sentence statement of the defect), `failure_scenario` (required, concrete inputs/state → wrong output/crash), `line` (optional, 1-indexed), `category` (optional, short kebab-case slug of the finding type, e.g. "correctness", "simplification", "efficiency", "test-coverage"; max 40 chars), `verdict` (optional enum: `CONFIRMED`/`PLAUSIBLE` — set when a verify pass ran, absent on inline-only reviews), `outcome` (optional enum: `fixed`/`skipped`/`no_change_needed` — set ONLY when re-reporting after applying fixes)
 - `level` (optional enum: `low`/`medium`/`high`/`xhigh`/`max`): effort level the review ran at
 
 ## ScheduleWakeup
@@ -167,15 +165,13 @@ Behavioral directives embedded within the tool descriptions:
 - **Do NOT schedule a short-interval wakeup to poll for background work you started** — when harness-tracked work finishes, you are re-invoked automatically, so polling is wasted; instead schedule a long fallback (1200s+) so the loop survives if the work hangs or never notifies; the exception is external work the harness cannot track (a CI run, a deploy, a remote queue) — there, pick a delay matched to how fast that state actually changes
 - Pass the same `/loop` prompt back via `prompt` each turn so the next firing repeats the task
 - For an autonomous `/loop` (no user prompt), pass the literal sentinel `<<autonomous-loop-dynamic>>` as `prompt` instead — runtime resolves it back to the autonomous-loop instructions at fire time; (there is a similar `<<autonomous-loop>>` sentinel for CronCreate-based autonomous loops; do not confuse the two — ScheduleWakeup always uses the `-dynamic` variant)
-- Omit the call to end the loop
-- Picking `delaySeconds` (Anthropic prompt cache has 5-minute TTL; sleeping past 300 s reads full conversation context uncached):
-  - Under 5 minutes (60s–270s): cache stays warm — right for actively polling external state the harness can't notify you about (a CI run, a deploy, a remote queue)
-  - 5 minutes to 1 hour (300s–3600s): pay the cache miss — right when there's no point checking sooner: waiting on something that takes minutes to change, genuinely idle, or as the long fallback heartbeat when something else is the primary wake signal
-  - **Don't pick 300s** — worst-of-both: cache miss without amortizing it; drop to 270s (stay in cache) or commit to 1200s+; don't think in round-number minutes — think in cache windows
-  - For idle ticks with no specific signal, default to **1200s–1800s** (20–30 min)
-  - Think about what you're actually waiting for, not just "how long should I sleep" — e.g., if polling a CI run that takes ~8 minutes, sleeping 60s burns the cache 8 times before it finishes; sleep ~270s twice instead
-  - Runtime clamps to `[60, 3600]` — no need to clamp yourself
-- `reason` field: one short sentence on what you chose and why; goes to telemetry and is shown back to the user; be specific ("watching CI run" beats "waiting"); the user reads this to understand what you're doing without having to predict your cadence — make it specific
+- `stop` (boolean): set to true to end the dynamic loop immediately instead of scheduling another wakeup — when true, all other fields are ignored and no further wakeups fire (call with `stop: true`, omitting every other field, to end the loop)
+- Picking `delaySeconds`: this session's requests use a 1-hour Anthropic prompt-cache TTL, so effectively every allowed delay (the runtime clamps to `[60, 3600]`) wakes up with conversation context still cached; there is no cache cliff inside that range to pace around, and scheduling extra wakeups just to keep the cache warm is pure waste — never do that; (if the session enters usage overage, later requests drop to the 5-minute TTL — don't try to track or preempt that, the guidance stays the same)
+  - Match the delay to what you're actually waiting for, not to cache windows
+  - **Actively polling external state the harness can't notify you about** (a CI run, a deploy, a remote queue): pick the delay from how fast that state actually changes — a CI run that takes ~8 minutes deserves one ~480s check, not eight 60s ones
+  - **The long fallback heartbeat** (something else — a Monitor, a task notification — is the primary wake signal): 1200s+, so quiet wakeups stay rare
+  - **Idle ticks with no specific signal to watch**: default to **1200s–1800s** (20–30 min); the loop still checks back regularly, and the user can always interrupt if they need you sooner
+- `reason` field: one short sentence explaining the chosen delay; goes to telemetry and is shown to the user; be specific
 
 ## Workflow
 
@@ -193,7 +189,7 @@ Behavioral directives embedded within the tool descriptions:
 - Every invocation automatically persists its script to a file under the session directory; to iterate, edit that file with Write/Edit and re-invoke with `{scriptPath: "<path>"}`
 
 ### Script format rules
-- Must begin with `export const meta = { name, description, phases }` — a PURE LITERAL (no variables, function calls, spreads, or template interpolation); `name` and `description` required; `phases` optional (one entry per `phase()` call with `title`/`detail` fields; add `model` when a phase uses a specific model override); phase titles must match `phase()` call titles exactly
+- Must begin with `export const meta = { name, description, phases }` — a PURE LITERAL (no variables, function calls, spreads, or template interpolation); `name` and `description` required; optional: `whenToUse` (shown in the workflow list), `phases` (one entry per `phase()` call with `title`/`detail` fields; add `model` when a phase uses a specific model override); phase titles must match `phase()` call titles exactly
 - Script body is plain JavaScript, NOT TypeScript — type annotations, interfaces, and generics fail to parse
 - Script body runs in async context — use `await` directly
 - Standard JS built-ins available EXCEPT `Date.now()`/`Math.random()`/`new Date()` (they throw — would break resume); pass timestamps via `args`; vary randomness by varying agent prompt/label by index
@@ -216,8 +212,9 @@ Behavioral directives embedded within the tool descriptions:
 - `workflow(nameOrRef, args?)` — run another workflow inline as a sub-step; pass name (string) or `{scriptPath}`; child shares concurrency cap, agent counter, abort signal, and token budget; its agents appear under a `"▸ name"` group in `/workflows`; nesting is one level only — `workflow()` inside a child throws; throws on unknown name / unreadable path / child syntax error
 
 ### Concurrency
-- Concurrent `agent()` calls capped at `min(16, cpu cores - 2)` per workflow — excess calls queue and run as slots free up
+- Concurrent `agent()` calls capped at `min(16, cpu cores - 2)` per workflow — excess calls queue and run as slots free up; you can still pass 100 items to `parallel()`/`pipeline()` and they all complete, only ~10 run at any moment
 - Total agent count per workflow lifetime capped at 1000 (runaway-loop backstop)
+- A single `parallel()`/`pipeline()` call accepts at most 4096 items; passing more is an explicit error, not a silent truncation
 
 ### Ultracode mode
 - When a system-reminder confirms ultracode is on, that opt-in is standing: author and run a workflow for every substantive task by default; goal is the most exhaustive, correct answer — token cost is not a constraint

@@ -11,10 +11,10 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `RemoteTrigger`
 - `SendMessage`
 - `TaskCreate`, `TaskGet`, `TaskList`
-- `TaskOutput` (DEPRECATED), `TaskStop`
+- `TaskOutput` (DEPRECATED), `TaskStop`, `TaskUpdate`
 - `WebFetch`, `WebSearch`
 
-Note: `TaskUpdate` is no longer present in the session-start deferred-tools announcement (previously listed alongside `TaskCreate`/`TaskGet`/`TaskList`), but the recurring task-tools nudge (see `runtime.md`) still references `TaskUpdate` by name verbatim — flagged as an inconsistency between the tool-availability listing and the nudge copy rather than a confirmed removal of the tool itself. The `## TaskUpdate` reference section below is kept as-is since no evidence contradicts its documented behavior.
+Note: `TaskUpdate` is back in the session-start deferred-tools announcement, alongside `TaskCreate`/`TaskGet`/`TaskList`/`TaskOutput`/`TaskStop` — this resolves the inconsistency flagged in a prior audit pass (where the announcement omitted it while the recurring task-tools nudge still referenced it by name).
 
 ## SendMessage
 - Sends a message to another agent
@@ -23,7 +23,7 @@ Note: `TaskUpdate` is no longer present in the session-start deferred-tools anno
 - `summary` (optional, required when message is a string): 5-10 word summary shown as a preview in the UI; max 200 chars
 - Plain text output is NOT visible to other agents — to communicate, you MUST call this tool
 - Messages from teammates are delivered automatically; you don't check an inbox
-- Refer to active teammates by name; to address a background agent that has no name (or whose name a teammate holds), or to resume a completed one, use its `agentId` (format `a...-...`) from its spawn result
+- Refer to agents by name — names keep working after an agent completes (a send resumes it from its transcript); use the raw `agentId` (format `a...-...`) from its spawn result only when the agent has no name, or when a newer agent took the name (latest wins)
 - When relaying, don't quote the original — it's already rendered to the user
 
 ## DesignSync
@@ -58,7 +58,7 @@ Note: `TaskUpdate` is no longer present in the session-start deferred-tools anno
   - Outside a git repo: delegates to `WorktreeCreate`/`WorktreeRemove` hooks for VCS-agnostic isolation
   - Switches the session's working directory to the new worktree
   - `name` (optional, mutually exclusive with `path`): segments may contain only letters/digits/dots/underscores/dashes; max 64 chars; random name if not provided
-  - `path` (optional, mutually exclusive with `name`): switch into existing worktree of the current repo (must appear in `git worktree list`); paths not registered as worktrees are rejected; `ExitWorktree` will not remove a worktree entered this way — use `action: "keep"`; switching with `path` also works when the session is already in a worktree (the previous worktree is left on disk untouched, only the new one is tracked for exit-time cleanup) and from agents whose working directory was pinned at launch (subagent isolation or explicit cwd) — in both cases the target must be a worktree under `.claude/worktrees/` of the same repository, and from a pinned agent the switch only affects that agent, not the parent session; after a further switch, previously-visited worktrees are no longer writable — re-issue `EnterWorktree` with `path` to return to one
+  - `path` (optional, mutually exclusive with `name`): switch into an existing worktree; on first entry from the launch directory, the path must appear in `git worktree list` for the repository that owns it — the current repository, or (in a multi-repo workspace) a repository nested inside it; paths registered by neither are rejected; `ExitWorktree` will not remove a worktree entered this way — use `action: "keep"`; switching with `path` also works when the session is already in a worktree (the previous worktree is left on disk untouched, only the new one is tracked for exit-time cleanup) and from agents whose working directory was pinned at launch (subagent isolation or explicit cwd) — in both cases the target must be a worktree under `.claude/worktrees/` of the same repository, and from a pinned agent the switch only affects that agent, not the parent session; after a further switch, previously-visited worktrees are no longer writable — re-issue `EnterWorktree` with `path` to return to one
 - `ExitWorktree`: only call when user explicitly asks; never call proactively
   - `action`: `"keep"` (leave worktree on disk) or `"remove"` (delete worktree and branch)
   - `discard_changes`: tool refuses removal if uncommitted/unmerged changes exist unless explicitly set to `true`; if the tool returns an error listing changes, confirm with the user before re-invoking with `discard_changes: true`
@@ -102,8 +102,9 @@ Note: `TaskUpdate` is no longer present in the session-start deferred-tools anno
 - ONLY mark `completed` when FULLY accomplished; if errors/blockers/cannot finish → keep as `in_progress`; when blocked, create a new task describing what needs to be resolved
 - Never mark `completed` if: tests failing, implementation partial, unresolved errors, couldn't find necessary files/dependencies
 - Delete tasks: setting `status` to `deleted` permanently removes the task
-- Update task details when requirements change or become clearer
+- Update task details when requirements change or become clearer, or when establishing dependencies between tasks
 - "Make sure to read a task's latest state using TaskGet before updating it."
+- Examples given in the schema: mark in_progress `{"taskId": "1", "status": "in_progress"}`; mark completed `{"taskId": "1", "status": "completed"}`; delete `{"taskId": "1", "status": "deleted"}`; claim by owner `{"taskId": "1", "owner": "my-name"}`; set up dependency `{"taskId": "2", "addBlockedBy": ["1"]}`
 - Status workflow: `pending` → `in_progress` → `completed` (or `deleted` to permanently remove)
 - Fields you can update:
   - `taskId` (required)
@@ -126,10 +127,10 @@ Note: `TaskUpdate` is no longer present in the session-start deferred-tools anno
 - `TaskStop`: stops a running background task by `task_id`; to stop an agent-team teammate, pass its agent ID (`"name@team"`) or bare teammate name as `task_id`; to stop a background agent spawned with a name, pass that name as `task_id`; `shell_id` param is deprecated — use `task_id` instead
 
 ## NotebookEdit
+- Replaces, inserts, or deletes a single cell in a Jupyter notebook (.ipynb file)
 - Must use the `Read` tool on the notebook in this conversation before editing — the tool fails otherwise
-- Completely replaces the contents of a specific cell in a Jupyter notebook (.ipynb file) with new source
 - `notebook_path` must be absolute (not relative)
-- `cell_number` is 0-indexed (legacy reference); cells are addressed via `cell_id` in the schema
+- `cell_id` is the `id` attribute shown in the `Read` tool's `<cell id="...">` output; required for `replace` and `delete`
 - `edit_mode`: `replace` (default), `insert` (new cell inserted AFTER the cell with `cell_id`, or at the beginning if not specified), `delete`
 - `cell_type`: `code` or `markdown`; required for `insert`
 
@@ -188,7 +189,7 @@ Note: `TaskUpdate` is no longer present in the session-start deferred-tools anno
 ## PushNotification
 - Sends a desktop notification in the user's terminal; if Remote Control is connected, also pushes to phone
 - Pulls the user's attention from whatever they're doing — cost is real
-- "Err toward not sending one" — don't notify for routine progress, when the user is clearly still watching, or when a quick task completes
+- "Err toward not sending one" — don't notify for routine progress, or to announce you've answered something they asked seconds ago and are clearly still watching, or when a quick task completes
 - Notify when there's a real chance the user has walked away AND something is worth coming back for, OR when the user explicitly asked
 - Keep `message` under 200 characters, one line, no markdown — mobile OSes truncate
 - Lead with what they'd act on ("build failed: 2 auth tests" beats "task done")

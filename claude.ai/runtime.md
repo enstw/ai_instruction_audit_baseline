@@ -22,6 +22,19 @@ Injected via `<system-reminder>` tags during the session, not present at system 
   - `review.skill.md`
   - `security-review.skill.md`
 
+## Subagent Types Reminder
+Issued at session start as a standalone `<system-reminder>` (separate from the `Agent` tool's own JSON description, which only says "Available agent types are listed in <system-reminder> messages in the conversation" and does not enumerate them):
+> "Available agent types for the Agent tool:
+> - claude: Catch-all for any task that doesn't fit a more specific agent. FleetView's default when no agent name is typed. (Tools: *)
+> - Explore: Fast read-only search agent for locating code... (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
+> - general-purpose: General-purpose agent for researching complex questions... (Tools: *)
+> - Plan: Software architect agent for designing implementation plans... (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
+> - statusline-setup: Use this agent to configure the user's Claude Code status line setting. (Tools: Read, Edit)
+>
+> When you launch multiple agents for independent work, send them in a single message with multiple tool uses so they run concurrently."
+- Full per-type descriptions tracked in `embedded-tools.md`'s `## Agent` section
+- The trailing "send independent agents in one message" directive is distinct from the Agent tool's own "if the user asks for parallel, MUST send one message" bullet — this one is a general default for any independent agent work, not conditioned on the user explicitly requesting parallelism
+
 ## Deferred-Tools Availability Reminder
 Issued at session start (and possibly again after schema fetches):
 > "The following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query 'select:<name>[,<name>...]' to load tool schemas before calling them: [list]"
