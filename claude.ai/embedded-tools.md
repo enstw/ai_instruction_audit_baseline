@@ -11,10 +11,19 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 - `Skill`
 - `ToolSearch`
 - `Workflow`
-- `Write`
 
 (Cron tools are NOT embedded — they are deferred and loaded via `ToolSearch`.
 `Glob` and `Grep` have been removed — no longer available as embedded or deferred tools.)
+
+`Write` is NOT present as a standalone embedded tool definition as of the 2026-07-17 pass (previously
+listed here). It is not present in the deferred-tools list either. Despite this, "Write" is still
+referenced by name in surrounding behavioral text this pass: the `Read` tool's own description
+("Do NOT re-read a file you just edited to verify — Edit/Write would have errored..."), the "Doing
+Tasks" section ("Prefer editing existing files to creating new ones"), the "auto memory" section
+("write to it directly with the Write tool"), and the `Explore`/`Plan` subagent tool-exclusion lists
+("Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit"). No standalone
+`## Write` tool section is retained below pending confirmation in a future pass of whether this is a
+lasting removal or a session-specific gap.
 
 Behavioral directives embedded within the tool descriptions:
 
@@ -125,23 +134,12 @@ Behavioral directives embedded within the tool descriptions:
 - Edit fails if `old_string` is not unique; provide more context or use `replace_all`
 - `replace_all` useful for renaming a variable
 
-## Write
-- Overwrites existing files; MUST Read first if file exists
-- Prefer Edit for modifying existing files (sends only diff); only use Write for new files or complete rewrites
-- NEVER create documentation files (`*.md`) or README files unless explicitly requested
-- Only use emojis if user explicitly requests
-
 ## Skill
-- `skill` parameter: exact name of an available skill (no leading slash); plugin-namespaced skills use the `plugin:skill` form
-- `args`: optional arguments
-- Some skills are scoped to a directory: their name is prefixed with the directory (e.g. `apps/web:deploy`) and their description says which directory they apply to; when a skill name has both a scoped and an unscoped variant, pick by the files you are working on — if the files are under a variant's directory, invoke that variant (most specific directory wins); otherwise invoke the unscoped one
-- Available skills are listed in system-reminder messages
-- Only invoke a skill that appears in that list, or one the user explicitly typed as `/<name>` — never guess or invent a skill name from training data
-- BLOCKING REQUIREMENT: when a skill matches the user's request, invoke the Skill tool BEFORE generating any other response about the task
-- NEVER mention a skill without actually calling this tool
-- Do not invoke a skill that is already running
-- Do not use Skill for built-in CLI commands (`/help`, `/clear`, etc.)
-- If `<command-name>` tag is present in the current conversation turn, the skill is ALREADY loaded — follow its instructions directly instead of calling the tool again
+A skill is a packaged set of instructions the user or project has set up for a particular kind of task (deploy steps, a review checklist, a repo-specific workflow). Available skills appear in a system-reminder listing with one-line descriptions. When the task at hand is one a listed skill covers, call this tool first — the skill's instructions load into the turn for you to follow in place of your default approach; some skills instead run in a subagent and return the finished result. Users may also ask for one by name (`/<name>`, or "slash command"); that's a request to invoke it.
+- `skill`: exact name from the listing, no leading slash. Plugin skills use `plugin:skill`. Directory-scoped skills are listed with a path prefix (`apps/web:deploy`); when both scoped and unscoped variants of a name exist, pick the one whose directory contains the files you're working on (most specific wins; unscoped otherwise).
+- `args`: optional arguments to pass through
+- Only names from the listing (or that the user typed explicitly) are valid. Built-in CLI commands (`/help`, `/clear`, …) aren't skills
+- If a `<command-name>` block is already present this turn, the skill is loaded — follow it directly rather than calling again
 
 ## ToolSearch
 - Fetches full schema definitions for deferred tools so they can be called

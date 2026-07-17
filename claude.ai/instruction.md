@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-07-14
+# Operational Baseline - Version 2026-07-17
 
 ## File Layout
 
@@ -186,11 +186,8 @@ Standalone directives injected after the environment block:
 ### Git Status
 - Snapshot of branch, status, and recent commits injected at conversation start; does not update during the session
 
-### JSON Parameters
-- Array and object parameters in tool calls must always use structured JSON format; description includes a worked example
-
-### Tool Invocation
-- Check that all required parameters are provided or inferable; ask user for missing values
-- If the user provides a specific value for a parameter (e.g., in quotes), use that value EXACTLY
-- Do not make up values for or ask about optional parameters
-- When calling multiple independent tools, make all calls in the same block; do NOT use placeholders or guess missing dependent parameters
+Not observed this pass (2026-07-17): "JSON Parameters" and "Tool Invocation" closing-directive
+sub-sections, previously documented here as standalone directives injected after the environment
+block alongside Git Status. These were stable and unchanged across every audit pass since the
+2026-03-17 restructure through 2026-07-14. Git Status itself was still present and observed this
+pass. Removed pending re-confirmation in a future pass.
