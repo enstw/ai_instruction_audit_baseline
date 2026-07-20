@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-07-17
+# Operational Baseline - Version 2026-07-20
 
 ## File Layout
 
@@ -102,6 +102,7 @@ General risk principles from `# Executing actions with care`; git-specific rules
 - **End-of-turn summary**: one or two sentences — what changed and what's next; nothing else
 - Match responses to the task: a simple question gets a direct answer, not headers and sections
 - In code: default to writing no comments; never write multi-paragraph docstrings or multi-line comment blocks (one short line max); don't create planning, decision, or analysis documents unless the user asks — work from conversation context, not intermediate files
+- **Pronoun default**: when using a pronoun for someone (the user or anyone else mentioned) whose pronouns haven't been stated, use they/them. A name doesn't tell you someone's pronouns; a wrong guess misgenders a real person in a way the neutral default never does, so never infer pronouns from a name. Applies to all user-visible text, including visible thinking.
 
 ## Session-Specific Guidance
 
@@ -186,8 +187,8 @@ Standalone directives injected after the environment block:
 ### Git Status
 - Snapshot of branch, status, and recent commits injected at conversation start; does not update during the session
 
-Not observed this pass (2026-07-17): "JSON Parameters" and "Tool Invocation" closing-directive
-sub-sections, previously documented here as standalone directives injected after the environment
-block alongside Git Status. These were stable and unchanged across every audit pass since the
-2026-03-17 restructure through 2026-07-14. Git Status itself was still present and observed this
-pass. Removed pending re-confirmation in a future pass.
+"JSON Parameters" and "Tool Invocation" closing-directive sub-sections (previously documented here
+as standalone directives injected after the environment block alongside Git Status) confirmed
+removed: absent in both the 2026-07-17 and 2026-07-20 passes, after being stable and unchanged
+across every audit pass from the 2026-03-17 restructure through 2026-07-14. Git Status itself
+remains present and was observed again this pass.

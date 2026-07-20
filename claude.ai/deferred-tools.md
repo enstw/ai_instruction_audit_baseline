@@ -122,7 +122,7 @@ Note: `TaskUpdate` is again omitted from the session-start deferred-tools announ
   - For bash tasks: prefer `Read` on the output file path (contains stdout/stderr)
   - For local_agent tasks: use the Agent tool result directly; do NOT Read the `.output` file — it is a symlink to the full sub-agent conversation transcript (JSONL) and will overflow context
   - For remote_agent tasks: prefer `Read` on the output file path
-  - `block=true` (default) waits for completion; `block=false` non-blocking; `timeout` max 600000 ms
+  - `block=true` (default) waits for completion; `block=false` non-blocking; `timeout` default 30000 ms, max 600000 ms, min 0
   - Works with all task types: background shells, async agents, and remote sessions; task IDs can be found using the `/tasks` command
 - `TaskStop`: stops a running background task by `task_id`; to stop an agent-team teammate, pass its agent ID (`"name@team"`) or bare teammate name as `task_id`; to stop a background agent spawned with a name, pass that name as `task_id`; `shell_id` param is deprecated — use `task_id` instead
 
@@ -150,7 +150,7 @@ Note: `TaskUpdate` is again omitted from the session-start deferred-tools announ
 - **CRITICAL — MUST include "Sources:" section** at end of response with all relevant URLs as markdown hyperlinks: `[Title](URL)`; MANDATORY, never skip
 - Domain filtering: `allowed_domains` (include only) and `blocked_domains` (exclude)
 - Only available in the US
-- Must use the correct year in queries — current month is July 2026
+- Must use the correct year in queries — current month is dynamically interpolated into the tool description each session (observed this pass as the session's current date, $date)
 
 ## Cron Tools (CronCreate / CronDelete / CronList)
 - `CronCreate`: standard 5-field cron in user's local timezone (`minute hour day-of-month month day-of-week`); no timezone conversion needed (`"0 9 * * *"` means 9am local)
