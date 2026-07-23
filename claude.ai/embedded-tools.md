@@ -39,6 +39,8 @@ Behavioral directives embedded within the tool descriptions:
 - Foreground (default) vs background: foreground when results needed before proceeding; background when work is genuinely independent
 - To continue a previously spawned agent, use `SendMessage` with the agent's ID or name as the `to` field; resumed agents continue with full prior context
 - A new `Agent` call starts a fresh agent with no memory of prior runs — the prompt must be self-contained
+- Each agent type's model, reasoning effort, and tool access are set in its definition (`.claude/agents/*.md` frontmatter, or the SDK `agents` option); the `model` parameter here overrides the definition for this one call
+- **Don't race**: after launching a background agent, you know nothing about its results. Never fabricate or predict them in any format — not as prose, summary, or structured output. The completion notification arrives in a later turn; it is never something you write yourself. If the user asks before it lands, say the agent is still running — give status, not a guess
 - Clearly tell the agent whether to write code or just do research (search, file reads, web fetches)
 - If agent description mentions proactive use, try to use without user asking
 - If user requests agents "in parallel", MUST send a single message with multiple Agent tool calls
@@ -65,11 +67,6 @@ Behavioral directives embedded within the tool descriptions:
 - Write a clear, concise description; never use words like "complex" or "risk" — just describe what it does
   - Simple commands (git, npm, standard CLI): brief (5-10 words)
   - Harder-to-parse commands (piped, obscure flags): add enough context to clarify
-- Multiple commands:
-  - Independent → multiple Bash tool calls in a single message
-  - Dependent sequential → `&&`
-  - Tolerate failures → `;`
-  - DO NOT use bare newlines to separate commands (newlines OK in quoted strings)
 - For git commands: prefer creating a new commit over amending; before destructive operations consider safer alternatives; never skip hooks (`--no-verify`) or bypass signing (`--no-gpg-sign`, `-c commit.gpgsign=false`) unless user explicitly asked — investigate hook failures
 - Sleep avoidance:
   - Do not sleep between commands that can run immediately

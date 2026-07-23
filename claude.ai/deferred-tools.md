@@ -12,9 +12,10 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `SendMessage`
 - `TaskCreate`, `TaskGet`, `TaskList`
 - `TaskOutput` (DEPRECATED), `TaskStop`
+- `TaskUpdate`
 - `WebFetch`, `WebSearch`
 
-Note: `TaskUpdate` is again omitted from the session-start deferred-tools announcement (alongside `TaskCreate`/`TaskGet`/`TaskList`/`TaskOutput`/`TaskStop`, which are listed). This is a recurrence of the same inconsistency flagged in an earlier audit pass and marked resolved in the 2026-07-11 pass — the announcement once more omits `TaskUpdate` while the recurring task-tools nudge still references it by name, and its schema remains unchanged and fetchable via `ToolSearch`.
+Note: `TaskUpdate` is present in the session-start deferred-tools announcement this pass (2026-07-23), alongside the other task tools. This resolves the recurring omission flagged across the 2026-07-11 through 2026-07-20 passes, where the announcement intermittently dropped `TaskUpdate` while the task-tools nudge continued to reference it by name. Its schema is unchanged and fetchable via `ToolSearch`.
 
 ## SendMessage
 - Sends a message to another agent

@@ -3,16 +3,16 @@
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ## Skill System
-- Available system-built skills observed: `deep-research`, `dataviz`, `update-config`, `keybindings-help`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`, `init`, `review`, `security-review`
+- Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`, `init`, `review`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
-- **Not observed this pass (2026-07-20)**: `verify` and `code-review`, present in every prior audit pass since 2026-05-21 (verify) / 2026-05-21 (code-review), including the immediately preceding 2026-07-17 pass. Per-skill files (`verify.skill.md`, `code-review.skill.md`) left in place pending re-confirmation in a future pass, per the precedent used for the JSON Parameters/Tool Invocation closing-directive removal.
+- **Confirmed removed (2026-07-23)**: `verify` and `code-review` — absent in both the 2026-07-20 and 2026-07-23 passes, after being stable and unchanged across every audit pass from 2026-05-21 through 2026-07-17, per the precedent used for the JSON Parameters/Tool Invocation closing-directive removal (two consecutive absent passes following long stability). Per-skill files (`verify.skill.md`, `code-review.skill.md`) removed from the baseline this pass.
+- **Not observed this pass (2026-07-23)**: `deep-research`, present in the 2026-07-20 pass and (per that pass's tracked file list) presumably before. Per-skill file (`deep-research.skill.md`) left in place pending re-confirmation in a future pass.
+- Skills still reference the removed `code-review` skill by name in their one-line descriptions (`simplify`: "use /code-review for that"; `review`: "for your working diff use /code-review") — the cross-reference persists even though `code-review` itself is no longer in the live listing.
 - Individual skill definitions tracked in per-skill files: `[name].skill.md`
-  - `deep-research.skill.md`
+  - `deep-research.skill.md` (not observed 2026-07-23 — see above)
   - `dataviz.skill.md`
   - `update-config.skill.md`
   - `keybindings-help.skill.md`
-  - `verify.skill.md` (not observed 2026-07-20 — see above)
-  - `code-review.skill.md` (not observed 2026-07-20 — see above)
   - `simplify.skill.md`
   - `fewer-permission-prompts.skill.md`
   - `loop.skill.md`
