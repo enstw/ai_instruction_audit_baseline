@@ -6,10 +6,9 @@ Injected via `<system-reminder>` tags during the session, not present at system 
 - Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`, `init`, `review`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
 - **Confirmed removed (2026-07-23)**: `verify` and `code-review` — absent in both the 2026-07-20 and 2026-07-23 passes, after being stable and unchanged across every audit pass from 2026-05-21 through 2026-07-17, per the precedent used for the JSON Parameters/Tool Invocation closing-directive removal (two consecutive absent passes following long stability). Per-skill files (`verify.skill.md`, `code-review.skill.md`) removed from the baseline this pass.
-- **Not observed this pass (2026-07-23)**: `deep-research`, present in the 2026-07-20 pass and (per that pass's tracked file list) presumably before. Per-skill file (`deep-research.skill.md`) left in place pending re-confirmation in a future pass.
+- **Confirmed removed (2026-07-26)**: `deep-research` — absent in both the 2026-07-23 and 2026-07-26 passes, after being present through 2026-07-20 and stable before that, per the same two-consecutive-absent-passes precedent used for the `verify`/`code-review` removal. Per-skill file (`deep-research.skill.md`) removed from the baseline this pass.
 - Skills still reference the removed `code-review` skill by name in their one-line descriptions (`simplify`: "use /code-review for that"; `review`: "for your working diff use /code-review") — the cross-reference persists even though `code-review` itself is no longer in the live listing.
 - Individual skill definitions tracked in per-skill files: `[name].skill.md`
-  - `deep-research.skill.md` (not observed 2026-07-23 — see above)
   - `dataviz.skill.md`
   - `update-config.skill.md`
   - `keybindings-help.skill.md`

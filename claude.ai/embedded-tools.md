@@ -11,19 +11,14 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 - `Skill`
 - `ToolSearch`
 - `Workflow`
+- `Write`
 
 (Cron tools are NOT embedded — they are deferred and loaded via `ToolSearch`.
 `Glob` and `Grep` have been removed — no longer available as embedded or deferred tools.)
 
-`Write` is NOT present as a standalone embedded tool definition as of the 2026-07-17 pass (previously
-listed here). It is not present in the deferred-tools list either. Despite this, "Write" is still
-referenced by name in surrounding behavioral text this pass: the `Read` tool's own description
-("Do NOT re-read a file you just edited to verify — Edit/Write would have errored..."), the "Doing
-Tasks" section ("Prefer editing existing files to creating new ones"), the "auto memory" section
-("write to it directly with the Write tool"), and the `Explore`/`Plan` subagent tool-exclusion lists
-("Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit"). No standalone
-`## Write` tool section is retained below pending confirmation in a future pass of whether this is a
-lasting removal or a session-specific gap.
+**`Write` restored (2026-07-26 pass)**: present again as a full standalone embedded tool definition,
+after being absent (with only cross-references in surrounding text) across the 2026-07-17 and
+2026-07-23 passes. See `## Write` below for the restored definition.
 
 Behavioral directives embedded within the tool descriptions:
 
@@ -131,6 +126,14 @@ Behavioral directives embedded within the tool descriptions:
 - Edit fails if `old_string` is not unique; provide more context or use `replace_all`
 - `replace_all` useful for renaming a variable
 
+## Write
+- Writes a file to the local filesystem
+- Overwrites the existing file if there is one at the provided path
+- If this is an existing file, MUST use the `Read` tool first to read the file's contents — this tool will fail if you did not read the file first
+- Prefer the `Edit` tool for modifying existing files — it only sends the diff; only use `Write` to create new files or for complete rewrites
+- NEVER create documentation files (*.md) or README files unless explicitly requested by the User
+- Only use emojis if the user explicitly requests it; avoid writing emojis to files unless asked
+
 ## Skill
 A skill is a packaged set of instructions the user or project has set up for a particular kind of task (deploy steps, a review checklist, a repo-specific workflow). Available skills appear in a system-reminder listing with one-line descriptions. When the task at hand is one a listed skill covers, call this tool first — the skill's instructions load into the turn for you to follow in place of your default approach; some skills instead run in a subagent and return the finished result. Users may also ask for one by name (`/<name>`, or "slash command"); that's a request to invoke it.
 - `skill`: exact name from the listing, no leading slash. Plugin skills use `plugin:skill`. Directory-scoped skills are listed with a path prefix (`apps/web:deploy`); when both scoped and unscoped variants of a name exist, pick the one whose directory contains the files you're working on (most specific wins; unscoped otherwise).
@@ -225,6 +228,10 @@ A skill is a packaged set of instructions the user or project has set up for a p
 ### Resume
 - Tool result includes a `runId`; to resume: relaunch with `Workflow({scriptPath, resumeFromRunId})`
 - Longest unchanged prefix of `agent()` calls returns cached results instantly; first edited/new call and everything after it runs live; same script + same args → 100% cache hit
+
+### Workflow size guideline
+- The session carries a default workflow size guideline (observed this pass: "medium — keep workflows under 15 agents"); a guideline, not a hard limit — follow it unless the user's prompt calls for a different scale
+- The user can raise or remove it with "Dynamic workflow size" in `/config`
 
 ### Quality patterns
 - **Adversarial verify**: spawn N independent skeptics per finding, each prompted to REFUTE; kill finding if ≥ majority refute; prevents plausible-but-wrong findings from surviving
