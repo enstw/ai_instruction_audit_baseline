@@ -26,13 +26,13 @@ Injected via `<system-reminder>` tags during the session, not present at system 
 Issued at session start as a standalone `<system-reminder>` (separate from the `Agent` tool's own JSON description, which only says "Available agent types are listed in <system-reminder> messages in the conversation" and does not enumerate them):
 > "Available agent types for the Agent tool:
 > - claude: Catch-all for any task that doesn't fit a more specific agent. FleetView's default when no agent name is typed. (Tools: *)
-> - Explore: Fast read-only search agent for locating code... (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
-> - general-purpose: General-purpose agent for researching complex questions... (Tools: *)
-> - Plan: Software architect agent for designing implementation plans... (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
+> - Explore: Fast read-only search agent for locating code. Use it to find files by pattern (eg. "src/components/**/*.tsx"), grep for symbols or keywords (eg. "API endpoints"), or answer "where is X defined / which files reference Y." Do NOT use it for code review, design-doc auditing, cross-file consistency checks, or open-ended analysis — it reads excerpts rather than whole files and will miss content past its read window. When calling, specify search breadth: "quick" for a single targeted lookup, "medium" for moderate exploration, or "very thorough" to search across multiple locations and naming conventions. (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
+> - general-purpose: General-purpose agent for researching complex questions, searching for code, and executing multi-step tasks. When you are searching for a keyword or file and are not confident that you will find the right match in the first few tries use this agent to perform the search for you. (Tools: *)
+> - Plan: Software architect agent for designing implementation plans. Use this when you need to plan the implementation strategy for a task. Returns step-by-step plans, identifies critical files, and considers architectural trade-offs. (Tools: All tools except Agent, Artifact, ExitPlanMode, Edit, Write, NotebookEdit)
 > - statusline-setup: Use this agent to configure the user's Claude Code status line setting. (Tools: Read, Edit)
 >
 > When you launch multiple agents for independent work, send them in a single message with multiple tool uses so they run concurrently."
-- Full per-type descriptions tracked in `embedded-tools.md`'s `## Agent` section
+- This block quote is the verbatim, complete text of the reminder (confirmed this pass — previously stored with a "..." mid-quote elision for Explore/general-purpose/Plan; no separate fuller version exists in `embedded-tools.md`, so the prior cross-reference to that file's `## Agent` section for "full per-type descriptions" was stale and has been removed)
 - The trailing "send independent agents in one message" directive is distinct from the Agent tool's own "if the user asks for parallel, MUST send one message" bullet — this one is a general default for any independent agent work, not conditioned on the user explicitly requesting parallelism
 
 ## Deferred-Tools Availability Reminder

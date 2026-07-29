@@ -15,7 +15,7 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `TaskUpdate`
 - `WebFetch`, `WebSearch`
 
-Note: `TaskUpdate` is present in the session-start deferred-tools announcement this pass (2026-07-23), alongside the other task tools. This resolves the recurring omission flagged across the 2026-07-11 through 2026-07-20 passes, where the announcement intermittently dropped `TaskUpdate` while the task-tools nudge continued to reference it by name. Its schema is unchanged and fetchable via `ToolSearch`.
+Note: `TaskUpdate` is absent from the session-start deferred-tools announcement again this pass (2026-07-29) — the same intermittent-omission pattern flagged across the 2026-07-11 through 2026-07-20 passes, after having appeared in the 2026-07-23 announcement. Its schema is unchanged and still fetchable via `ToolSearch` on request (verified this pass); only the unprompted session-start listing is affected.
 
 ## SendMessage
 - Sends a message to another agent
