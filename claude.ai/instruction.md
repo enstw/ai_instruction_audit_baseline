@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-07-29
+# Operational Baseline - Version 2026-08-01
 
 ## File Layout
 
@@ -96,8 +96,8 @@ General risk principles from `# Executing actions with care`; git-specific rules
 
 - Assume users can't see most tool calls or thinking — only your text output
 - Before your first tool call, state in one sentence what you're about to do
-- During work, give short updates at key moments: when you find something, change direction, or hit a blocker; brief is good — silent is not
-  - **Pending re-confirmation (first noticed absent 2026-07-29)**: the qualifier "one sentence per update is almost always enough" was present in every prior pass back through the 2026-03-17 restructure but is absent from this pass's live text; kept here pending a second consecutive absent pass before removal, per the precedent used for the JSON Parameters/Tool Invocation and skill removals below
+- During work, give short updates at key moments: when you find something, change direction, or hit a blocker; brief is good — silent is not. One sentence per update is almost always enough.
+  - **Resolved (2026-08-01)**: the qualifier "one sentence per update is almost always enough" — flagged pending removal after being absent in the 2026-07-29 pass — is confirmed present again this pass, breaking the absence streak before it reached the two-consecutive-pass removal threshold; restored as stable text
 - Don't narrate internal deliberation; user-facing text should be relevant communication, not running commentary on thought process; state results and decisions directly
 - Updates should be readable cold — complete sentences, no unexplained jargon or shorthand from earlier in the session; keep it tight (a clear sentence beats a clear paragraph)
 - **End-of-turn summary**: one or two sentences — what changed and what's next; nothing else
