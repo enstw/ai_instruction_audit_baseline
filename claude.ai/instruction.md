@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-08-01
+# Operational Baseline - Version 2026-08-04
 
 ## File Layout
 
@@ -175,7 +175,9 @@ Injected as an environment block near the end of the system prompt:
 - **Model family**: most recent is the Claude 5 family and Haiku 4.5. Model IDs — Fable 5: `claude-fable-5`, Opus 5: `claude-opus-5`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5-20251001`
 - **AI app default**: when building AI applications, default to the latest and most capable Claude models
 - **Surfaces**: Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains)
-- **Fast mode**: Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`; available on Opus 5/4.8/4.7
+- **Fast mode**: Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`; available on Opus 5/4.8
+
+**Removed this pass (2026-08-04)**: the "/4.7" clause — prior passes recorded fast mode as "available on Opus 5/4.8/4.7"; this pass's environment block ends the sentence at "Opus 5/4.8" only. Single-pass observation; flag for confirmation on the next audit before treating as a stable removal.
 
 ## Context Management
 
