@@ -3,15 +3,22 @@
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ## Skill System
-- Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`, `init`, `review`, `security-review`
+- Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`, `init`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
-- **Confirmed removed (2026-07-23)**: `verify` and `code-review` — absent in both the 2026-07-20 and 2026-07-23 passes, after being stable and unchanged across every audit pass from 2026-05-21 through 2026-07-17, per the precedent used for the JSON Parameters/Tool Invocation closing-directive removal (two consecutive absent passes following long stability). Per-skill files (`verify.skill.md`, `code-review.skill.md`) removed from the baseline this pass.
-- **Confirmed removed (2026-07-26)**: `deep-research` — absent in both the 2026-07-23 and 2026-07-26 passes, after being present through 2026-07-20 and stable before that, per the same two-consecutive-absent-passes precedent used for the `verify`/`code-review` removal. Per-skill file (`deep-research.skill.md`) removed from the baseline this pass.
-- Skills still reference the removed `code-review` skill by name in their one-line descriptions (`simplify`: "use /code-review for that"; `review`: "for your working diff use /code-review") — the cross-reference persists even though `code-review` itself is no longer in the live listing.
+- **`code-review` reappeared (2026-08-07)**: absent since being confirmed removed 2026-07-23 (see below); back in this pass's live listing with an expanded description vs. its last-tracked version (git show of the pre-removal file, 2026-07-14 audit):
+  - Old: "Review the current diff for correctness bugs and reuse/simplification/efficiency cleanups at the given effort level (low/medium: fewer, high-confidence findings; high→max: broader coverage, may include uncertain findings). Pass --comment to post findings as inline PR comments, or --fix to apply the findings to the working tree after the review."
+  - New (2026-08-07): "Review the current diff, or a PR number/branch/path target, for correctness bugs and reuse/simplification/efficiency cleanups at the given effort level (low/medium: fewer, high-confidence findings; high→max: broader coverage, may include uncertain findings); with no level given, it reuses the level you typed last. Pass --comment to post findings as inline PR comments, or --fix to apply the findings to the working tree after the review."
+  - Net new clauses: target now accepts "a PR number/branch/path" (not just the working diff); effort level now has memory — "with no level given, it reuses the level you typed last"
+  - Per-skill file `code-review.skill.md` re-added to the baseline this pass
+- **`review` absent (2026-08-07, single-pass observation)**: was present and stable through the 2026-08-04 pass (`review.skill.md`: "Review a GitHub pull request; for your working diff use /code-review"). Not in this pass's listing. Per the two-consecutive-absent-passes precedent used for prior skill removals, `review.skill.md` is NOT yet deleted — flagged pending confirmation on the next audit pass.
+- **Confirmed removed (2026-07-23)**: `verify` — absent in both the 2026-07-20 and 2026-07-23 passes, after being stable and unchanged across every audit pass from 2026-05-21 through 2026-07-17, per the precedent used for the JSON Parameters/Tool Invocation closing-directive removal (two consecutive absent passes following long stability). Per-skill file (`verify.skill.md`) removed from the baseline that pass. (`code-review` was also confirmed removed alongside `verify` on 2026-07-23, but see above — it has since reappeared as of 2026-08-07.)
+- **Confirmed removed (2026-07-26)**: `deep-research` — absent in both the 2026-07-23 and 2026-07-26 passes, after being present through 2026-07-20 and stable before that, per the same two-consecutive-absent-passes precedent. Per-skill file (`deep-research.skill.md`) removed from the baseline that pass.
+- `simplify`'s cross-reference to `/code-review` ("use /code-review for that") is live/accurate again now that `code-review` has returned.
 - Individual skill definitions tracked in per-skill files: `[name].skill.md`
   - `dataviz.skill.md`
   - `update-config.skill.md`
   - `keybindings-help.skill.md`
+  - `code-review.skill.md`
   - `simplify.skill.md`
   - `fewer-permission-prompts.skill.md`
   - `loop.skill.md`
@@ -19,7 +26,7 @@ Injected via `<system-reminder>` tags during the session, not present at system 
   - `claude-api.skill.md`
   - `run.skill.md`
   - `init.skill.md`
-  - `review.skill.md`
+  - `review.skill.md` (pending removal confirmation — see above)
   - `security-review.skill.md`
 
 ## Subagent Types Reminder

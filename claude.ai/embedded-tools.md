@@ -5,11 +5,11 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 - `Agent`
 - `Bash`
 - `Edit`
+- `ListAgents`
 - `Read`
 - `ReportFindings`
 - `ScheduleWakeup`
 - `Skill`
-- `ToolSearch`
 - `Workflow`
 - `Write`
 
@@ -19,6 +19,21 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 **`Write` restored (2026-07-26 pass)**: present again as a full standalone embedded tool definition,
 after being absent (with only cross-references in surrounding text) across the 2026-07-17 and
 2026-07-23 passes. See `## Write` below for the restored definition.
+
+**`ListAgents` added (2026-08-07 pass)**: new embedded tool, not previously tracked. See `## ListAgents`
+below.
+
+**`ToolSearch` no longer printed in the visible embedded-tool block (2026-08-07 pass)**: previously one
+of the ten visibly-documented always-loaded tools (see prior list above, and the `## ToolSearch` section
+below, both now stale on this point). This pass, `ToolSearch` is absent from the printed `<functions>`
+block at session start, and is also not named in the deferred-tools system-reminder list (`runtime.md`,
+"Deferred-Tools Availability Reminder") — it appears nowhere in the session's visible tool documentation.
+Empirically verified still functional: invoking `ToolSearch` with `select:<19 deferred tool names>` this
+pass succeeded and returned all 19 schemas correctly, so the tool is still embedded/callable — it has
+just become undocumented in the printed tool listing. No updated description text for `ToolSearch` itself
+was observed this pass (its own schema was never printed); the `## ToolSearch` section below is retained
+as the last-known text pending confirmation this is a stable documentation change and not a one-off
+rendering gap. Single-pass observation.
 
 Behavioral directives embedded within the tool descriptions:
 
@@ -43,6 +58,12 @@ Behavioral directives embedded within the tool descriptions:
 - `model` parameter: optional override (`sonnet`, `opus`, `haiku`, `fable`); takes precedence over the agent definition's model frontmatter; if omitted, uses the agent definition's model or inherits from the parent; ignored for `subagent_type: "fork"` — forks always inherit the parent model
 - **Writing the prompt**: brief the agent like a smart colleague who just walked into the room — explain the goal, what's already been ruled out, and enough context for judgment calls; lookups → exact command; investigations → the question (prescribed steps become dead weight when the premise is wrong); cap response length when relevant ("report in under 200 words"); terse command-style prompts produce shallow, generic work
 - **Never delegate understanding**: don't write "based on your findings, fix the bug" or "based on the research, implement it"; that pushes synthesis onto the agent. Write prompts that prove understanding — include file paths, line numbers, what specifically to change
+
+## ListAgents
+- "Lists agents you can SendMessage to — in-process subagents you spawned, other local Claude sessions on this machine, your Claude sessions running in the cloud (when this session has cloud access), and (when Remote Control is connected) remote bridge sessions, which are reply-only — you can message one only in reply, after it messages you first, and no connector reaches it by name either."
+- "Names are the address: send with `SendMessage({to: \"<name>\", message: \"...\"})`, copying the name exactly as a row prints it. Append a row's ` [ref]` only when the bare name is not enough — two rows share it, or an error asks you to disambiguate."
+- Parameters: `channel` (string, max 256 chars) — "Not available in this build; leave unset"; `q` (string, max 256 chars) — "Not available in this build; leave unset". No required parameters.
+- Directly ties into the expanded `SendMessage` cross-session addressing (see `deferred-tools.md` `## SendMessage`) — `ListAgents` is the discovery step, `SendMessage` is the send step.
 
 ## Bash
 - Reserved for system commands and terminal operations requiring shell execution

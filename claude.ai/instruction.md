@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-08-04
+# Operational Baseline - Version 2026-08-07
 
 ## File Layout
 
@@ -177,7 +177,7 @@ Injected as an environment block near the end of the system prompt:
 - **Surfaces**: Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains)
 - **Fast mode**: Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`; available on Opus 5/4.8
 
-**Removed this pass (2026-08-04)**: the "/4.7" clause — prior passes recorded fast mode as "available on Opus 5/4.8/4.7"; this pass's environment block ends the sentence at "Opus 5/4.8" only. Single-pass observation; flag for confirmation on the next audit before treating as a stable removal.
+**Confirmed removed (2026-08-07)**: the "/4.7" clause — prior passes (before 2026-08-04) recorded fast mode as "available on Opus 5/4.8/4.7"; absent in both the 2026-08-04 and 2026-08-07 passes, per the two-consecutive-absent-passes precedent used elsewhere in this baseline. The environment block now stably ends the sentence at "Opus 5/4.8" only.
 
 ## Context Management
 

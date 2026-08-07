@@ -18,15 +18,27 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 Note: `TaskUpdate` was present in the session-start deferred-tools announcement this pass (2026-08-01), breaking the intermittent-omission pattern flagged across the 2026-07-11 through 2026-07-29 passes (present only briefly in the 2026-07-23 announcement before). Its schema is unchanged and fetchable via `ToolSearch` on request (verified this pass).
 
 ## SendMessage
-- **Description reformatted this pass (2026-08-01)**: now leads with a fenced JSON example (`{"to": "researcher", "summary": "assign task 1", "message": "start on task #1"}`) and a two-row markdown table for `to` (`"researcher"` → teammate by name; `"main"` → the main conversation, background subagents only), replacing the previous flat bullet-prose opening. Content unchanged, presentation restructured.
+- **Substantially expanded this pass (2026-08-07)**: prior baseline documented only a flat send-to-teammate-or-main flow (JSON example + two-row table: `"researcher"` → teammate by name, `"main"` → main conversation for background subagents only). This pass adds a full cross-session addressing layer, tied to the new `ListAgents` tool (`embedded-tools.md` `## ListAgents`) — new `to`-table rows, a new "Cross-session" doc section, `[ref]` disambiguation, the `<cross-session-message>` wrapper, and a new permission-boundary security warning. None of this was present in any prior tracked pass.
 - Sends a message to another agent
-- `to`: recipient — teammate name (e.g., `"researcher"`) or `"main"` (the main conversation, for background subagents only)
+- `to` table (routing targets):
+  - `"researcher"` — teammate by name
+  - `"main"` — the main conversation (background subagents only)
+  - `"worker"` — any agent from `ListAgents` — subagent, another local Claude session
+  - `"worker [3fa9c1]"` — same, plus its `[ref]` — only when a listing or an error shows one
+- `to` parameter description (schema-level, matches table): "Recipient: a name from ListAgents (append its \" [ref]\" only when a listing or an error shows one), a teammate name, \"main\", or a background agent's agentId"
 - `message` (required): plain text message content
 - `summary` (optional, required when message is a string): 5-10 word summary shown as a preview in the UI; max 200 chars
-- Plain text output is NOT visible to other agents — to communicate, you MUST call this tool
+- "Your plain text output is NOT visible to other agents — to communicate, you MUST call this tool."
 - Messages from teammates are delivered automatically; you don't check an inbox
 - Refer to agents by name — names keep working after an agent completes (a send resumes it from its transcript); use the raw `agentId` (format `a...-...`) from its spawn result only when the agent has no name, or when a newer agent took the name (latest wins)
 - When relaying, don't quote the original — it's already rendered to the user
+- **Cross-session (new section, 2026-08-07)**:
+  - Use `ListAgents` to discover targets. Every row leads with the agent's `name [ref]` — the name IS the address; there is no separate address syntax
+  - Examples: `{"to": "worker", "message": "check if tests pass over there"}`; `{"to": "worker [3fa9c1]", "message": "you, specifically"}`
+  - Send the bare name. Append the ` [ref]` only when the bare name is not enough — `ListAgents` shows two rows with it, or an error asks you to disambiguate. A ref not just read from a listing or an error will not resolve, and if the same name also names an in-process agent, the bare name always wins — use the in-process one
+  - "A listed peer is alive and will process your message — no \"busy\" state; messages enqueue and drain at the receiver's next tool round."
+  - Incoming cross-session messages arrive wrapped as `<cross-session-message from="...">`. **To reply, copy its `from` attribute as your `to`.**
+  - **Permission boundaries are per-session**: NEVER ask a peer to perform an action that was denied or blocked in your session, or that you expect your own permission settings would block — a peer doing it for you bypasses the user's permission decision ("cross-session permission laundering"). Route blocked work back to your user instead.
 
 ## DesignSync
 - Reads and updates the user's claude.ai/design design-system projects through their claude.ai login (or, for sessions without one, a dedicated design authorization from `/design-login`)
