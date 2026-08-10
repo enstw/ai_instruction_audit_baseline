@@ -202,14 +202,13 @@ Note: `TaskUpdate` was present in the session-start deferred-tools announcement 
 - **`ws` source**: open a WebSocket and stream each incoming text frame as an event instead of a shell `command` — no shell, no polling: the server pushes, you get notified; mutually exclusive with `command`; takes `{url, protocols}` (e.g. `Monitor({ws: {url: 'wss://events.example.com/stream', protocols: ['v1']}, description: 'deploy events'})`); each text frame becomes one notification (multiline frames stay as one event); binary frames reported as `[binary frame, N bytes]` rather than passed through; socket close ends the watch with the close code surfaced, errors surfaced before close; same rate limiting as bash — a firehose is suppressed and eventually stopped, so subscribe to a filtered feed where one exists; prefer this over `command: 'websocat wss://…'` — avoids the extra process and line-buffering pitfalls; use bash when frames need transforming/filtering with shell tools before they become events
 
 ## PushNotification
-- Sends a desktop notification in the user's terminal; if Remote Control is connected, also pushes to phone
-- Pulls the user's attention from whatever they're doing — cost is real
-- "Err toward not sending one" — don't notify for routine progress, or to announce you've answered something they asked seconds ago and are clearly still watching, or when a quick task completes
-- Notify when there's a real chance the user has walked away AND something is worth coming back for, OR when the user explicitly asked
-- Keep `message` under 200 characters, one line, no markdown — mobile OSes truncate
-- Lead with what they'd act on ("build failed: 2 auth tests" beats "task done")
-- When the user is actively at the terminal, output already reaches them — a notification on top would be a duplicate, so the tool skips sending and says so
-- If the result says the push wasn't sent, that's expected — no action needed; reasons include: redundant (user already at terminal), turned off, or had nowhere to go
+**Description substantially rewritten (2026-08-10 pass)** — expanded from a bulleted summary into prose with new reasoning; wording below is verbatim from the tool's own description:
+- "This tool sends a desktop notification in the user's terminal. If Remote Control is connected, it also pushes to their phone. Either way, it pulls their attention from whatever they're doing — a meeting, another task, dinner — to this session. That's the cost. The benefit is they learn something now that they'd want to know now: a long task finished while they were away, a build is ready, you've hit something that needs their decision before you can continue." **[ADDED 2026-08-10]** — the "meeting/another task/dinner" examples and the whole benefit-side sentence ("The benefit is they learn something now...") are new; baseline previously only said "pulls the user's attention from whatever they're doing — cost is real"
+- "Because a notification they didn't need is annoying in a way that accumulates, err toward not sending one." **[MODIFIED 2026-08-10]** — the "annoying in a way that accumulates" framing is new; previously just "Err toward not sending one"
+- "Don't notify for routine progress, or to announce you've answered something they asked seconds ago and are clearly still watching, or when a quick task completes. Notify when there's a real chance they've walked away and there's something worth coming back for — or when they've explicitly asked you to notify them."
+- "Keep the message under 200 characters, one line, no markdown." Mobile OSes truncate.
+- "Lead with what they'd act on — \"build failed: 2 auth tests\" tells them more than \"task done\" and more than a status dump." **[MODIFIED 2026-08-10]** — "and more than a status dump" clause is new
+- "When the user is actively at the terminal, your output already reaches them — a notification on top of it would be a duplicate, so the tool skips it and says so. A \"not sent\" result is expected and only ever about this one notification: it was redundant, turned off, or had nowhere to go."
 - `status` field is constant `"proactive"`
 
 ## RemoteTrigger
@@ -221,5 +220,7 @@ Note: `TaskUpdate` was present in the session-start deferred-tools announcement 
   - `create`: POST `/v1/code/triggers` (requires body)
   - `update`: POST `/v1/code/triggers/{trigger_id}` (requires body, partial update)
   - `run`: POST `/v1/code/triggers/{trigger_id}/run` (optional body)
+  - **[ADDED 2026-08-10]** `create_webhook_trigger`: POST `/v1/code/webhook-triggers` (requires body) — attaches an event source to an existing routine, e.g. a GitHub event that fires it; the body names the source and scope (such as a repository), the event list, a structured filter, and the `routine_trigger_id` to fire; the server validates the shape and rejects worker credentials
 - Response is the raw JSON from the API
 - For `create`/`update`, a summary line is appended with the server-parsed run time and the routine's claude.ai URL — relay both to the user so they can confirm the time is right and know where the result will appear
+- **[ADDED 2026-08-10]** For `create_webhook_trigger`, the appended summary line is the claude.ai link of the routine the trigger fires (no run time — a webhook trigger has no schedule); relay it so the user knows which routine is now wired

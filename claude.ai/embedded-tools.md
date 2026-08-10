@@ -10,6 +10,7 @@ Tool definition blocks are the first injection. Always-loaded tools at session s
 - `ReportFindings`
 - `ScheduleWakeup`
 - `Skill`
+- `ToolSearch`
 - `Workflow`
 - `Write`
 
@@ -23,17 +24,12 @@ after being absent (with only cross-references in surrounding text) across the 2
 **`ListAgents` added (2026-08-07 pass)**: new embedded tool, not previously tracked. See `## ListAgents`
 below.
 
-**`ToolSearch` no longer printed in the visible embedded-tool block (2026-08-07 pass)**: previously one
-of the ten visibly-documented always-loaded tools (see prior list above, and the `## ToolSearch` section
-below, both now stale on this point). This pass, `ToolSearch` is absent from the printed `<functions>`
-block at session start, and is also not named in the deferred-tools system-reminder list (`runtime.md`,
-"Deferred-Tools Availability Reminder") — it appears nowhere in the session's visible tool documentation.
-Empirically verified still functional: invoking `ToolSearch` with `select:<19 deferred tool names>` this
-pass succeeded and returned all 19 schemas correctly, so the tool is still embedded/callable — it has
-just become undocumented in the printed tool listing. No updated description text for `ToolSearch` itself
-was observed this pass (its own schema was never printed); the `## ToolSearch` section below is retained
-as the last-known text pending confirmation this is a stable documentation change and not a one-off
-rendering gap. Single-pass observation.
+**`ToolSearch` restored to the visible embedded-tool block (2026-08-10 pass)**: back in the printed
+`<functions>` block at session start, as the 9th of 11 always-loaded tools (between `Skill` and
+`Workflow`), reversing the single-pass 2026-08-07 observation that it had gone undocumented. Description
+text unchanged from the last-known version in `## ToolSearch` below. It was never actually uncallable —
+the 2026-08-07 pass already confirmed it functional despite being undocumented — so this is a visibility
+restoration, not a functional change.
 
 Behavioral directives embedded within the tool descriptions:
 
@@ -60,7 +56,8 @@ Behavioral directives embedded within the tool descriptions:
 - **Never delegate understanding**: don't write "based on your findings, fix the bug" or "based on the research, implement it"; that pushes synthesis onto the agent. Write prompts that prove understanding — include file paths, line numbers, what specifically to change
 
 ## ListAgents
-- "Lists agents you can SendMessage to — in-process subagents you spawned, other local Claude sessions on this machine, your Claude sessions running in the cloud (when this session has cloud access), and (when Remote Control is connected) remote bridge sessions, which are reply-only — you can message one only in reply, after it messages you first, and no connector reaches it by name either."
+- "Lists agents you can SendMessage to — in-process subagents you spawned, other local Claude sessions on this machine, your Claude sessions running in the cloud (when this session has cloud access), and (when Remote Control is connected here) your Remote Control sessions on other machines."
+- **Modified (2026-08-10 pass)**: the prior "remote bridge sessions, which are reply-only — you can message one only in reply, after it messages you first, and no connector reaches it by name either" language is gone; Remote Control sessions on other machines are now described the same way as any other listed peer, without the reply-only / no-by-name-addressing restriction.
 - "Names are the address: send with `SendMessage({to: \"<name>\", message: \"...\"})`, copying the name exactly as a row prints it. Append a row's ` [ref]` only when the bare name is not enough — two rows share it, or an error asks you to disambiguate."
 - Parameters: `channel` (string, max 256 chars) — "Not available in this build; leave unset"; `q` (string, max 256 chars) — "Not available in this build; leave unset". No required parameters.
 - Directly ties into the expanded `SendMessage` cross-session addressing (see `deferred-tools.md` `## SendMessage`) — `ListAgents` is the discovery step, `SendMessage` is the send step.
@@ -156,7 +153,7 @@ Behavioral directives embedded within the tool descriptions:
 - Only use emojis if the user explicitly requests it; avoid writing emojis to files unless asked
 
 ## Skill
-A skill is a packaged set of instructions the user or project has set up for a particular kind of task (deploy steps, a review checklist, a repo-specific workflow). Available skills appear in a system-reminder listing with one-line descriptions. When the task at hand is one a listed skill covers, call this tool first — the skill's instructions load into the turn for you to follow in place of your default approach; some skills instead run in a subagent and return the finished result. Users may also ask for one by name (`/<name>`, or "slash command"); that's a request to invoke it.
+A skill is a packaged set of instructions the user or project has set up for a particular kind of task (deploy steps, a review checklist, a repo-specific workflow). Available skills appear in a system-reminder listing with one-line descriptions. When the task at hand is one a listed skill covers, call this tool first — the skill's instructions load into the turn for you to follow in place of your default approach; some skills instead run in a subagent and return the finished result. **[ADDED 2026-08-10]** A skill that runs in the background returns only the agent's name — its result arrives later as a task notification, so don't wait on it or invoke it again in the meantime. Users may also ask for one by name (`/<name>`, or "slash command"); that's a request to invoke it.
 - `skill`: exact name from the listing, no leading slash. Plugin skills use `plugin:skill`. Directory-scoped skills are listed with a path prefix (`apps/web:deploy`); when both scoped and unscoped variants of a name exist, pick the one whose directory contains the files you're working on (most specific wins; unscoped otherwise).
 - `args`: optional arguments to pass through
 - Only names from the listing (or that the user typed explicitly) are valid. Built-in CLI commands (`/help`, `/clear`, …) aren't skills
@@ -195,6 +192,7 @@ A skill is a packaged set of instructions the user or project has set up for a p
 ## Workflow
 
 - Execute a workflow script that orchestrates multiple subagents deterministically; runs in the background — returns immediately with a task ID; `<task-notification>` arrives on completion; use `/workflows` to watch live progress
+- **[ADDED 2026-08-10]** "A workflow structures work across many agents — to be comprehensive (decompose and cover in parallel), to be confident (independent perspectives and adversarial checks before committing), or to take on scale one context can't hold (migrations, audits, broad sweeps). The script is where you encode that structure: what fans out, what verifies, what synthesizes."
 - **ONLY call when the user has explicitly opted into multi-agent orchestration**; workflows can spawn dozens of agents and consume large amounts of tokens — the user must request that scale, not have it inferred
 - Explicit opt-in triggers:
   - The user included the keyword `"ultracode"` in their prompt (you'll see a system-reminder confirming it)
@@ -202,8 +200,15 @@ A skill is a packaged set of instructions the user or project has set up for a p
   - The user directly asked you to run a workflow or use multi-agent orchestration in their own words (`"use a workflow"`, `"run a workflow"`, `"fan out agents"`, `"orchestrate this with subagents"`); the ask must be in the user's words — a task that would merely benefit from a workflow does not count
   - The user invoked a skill or slash command whose instructions tell you to call Workflow
   - The user asked you to run a specific named or saved workflow
-- For any other task — even one that would clearly benefit from parallelism — do NOT call this tool; use the Agent tool for individual subagents, or briefly describe what a workflow could do and ask the user; mention they can ask with `"use a workflow"` to skip the ask next time
-- When calling it, the right move is often **hybrid**: scout inline first (list files, scope the diff) to discover the work-list, then call Workflow to pipeline over it
+- For any other task — even one that would clearly benefit from parallelism — do NOT call this tool; use the Agent tool **(if available — [MODIFIED 2026-08-10])** for individual subagents, or briefly describe what a **multi-agent** workflow could do **and how much it would roughly cost ([MODIFIED 2026-08-10])**, and ask the user **whether to run it**; mention they can ask with `"use a workflow"` to skip the ask next time
+- When calling it, the right move is often **hybrid**: scout inline first (list files, **find the channels ([ADDED 2026-08-10])**, scope the diff) to discover the work-list, then call Workflow to pipeline over it. **[ADDED 2026-08-10]** "You don't need to know the shape before the *task* — only before the *orchestration step*."
+- **[ADDED 2026-08-10]** Common single-phase workflows you can chain across turns:
+  - **Understand** — parallel readers over relevant subsystems → structured map
+  - **Design** — judge panel of N independent approaches → scored synthesis
+  - **Review** — dimensions → find → adversarially verify
+  - **Research** — multi-modal sweep → deep-read → synthesize
+  - **Migrate** — discover sites → transform each (worktree isolation) → verify
+  - For larger work, run several in sequence — read each result before deciding the next phase; you stay in the loop, each workflow is one well-scoped fan-out
 - Parameters: `script` (inline, max 524288 chars), `scriptPath` (file path; takes precedence), `name` (predefined workflow), `resumeFromRunId`, `args` (pass arrays/objects as actual JSON values — NOT JSON-encoded strings), `title`/`description` (ignored — set in meta block)
 - Every invocation automatically persists its script to a file under the session directory; to iterate, edit that file with Write/Edit and re-invoke with `{scriptPath: "<path>"}`
 
@@ -238,13 +243,14 @@ A skill is a packaged set of instructions the user or project has set up for a p
 ### Ultracode mode
 - When a system-reminder confirms ultracode is on, that opt-in is standing: author and run a workflow for every substantive task by default; goal is the most exhaustive, correct answer — token cost is not a constraint
 - For multi-phase work (understand → design → implement → review), run several workflows in sequence — one per phase — to stay in the loop between them
+- **[ADDED 2026-08-10]** "The quality patterns below (adversarial verify, multi-modal sweep, completeness critic, loop-until-dry) are the tools; pick what fits the task. Lean toward orchestrating with workflows and adversarially verifying your findings — unless the work is trivial or already verified."
 - Solo only on conversational turns or trivial mechanical edits
 - When a reminder says ultracode is off, revert to the opt-in rule
 
 ### DEFAULT: pipeline() over parallel()
 - `pipeline()` is the default; only use `parallel()` (barrier) when stage N genuinely needs cross-item context from all of stage N-1
 - Barrier IS correct: dedup/merge across full result set before expensive downstream work; early-exit when count is zero; stage N's prompt references "the other findings" for comparison
-- Barrier NOT justified by: "I need to flatten/map/filter first" (do it inside a pipeline stage); "the stages are conceptually separate"; "it's cleaner code" — barrier latency is real
+- Barrier NOT justified by: "I need to flatten/map/filter first" (do it inside a pipeline stage); "the stages are conceptually separate"; "it's cleaner code" — barrier latency is real. **[ADDED 2026-08-10]** "If 5 finders run and the slowest takes 3× the fastest, a barrier wastes 2/3 of the fast finders' idle time."
 
 ### Resume
 - Tool result includes a `runId`; to resume: relaunch with `Workflow({scriptPath, resumeFromRunId})`
