@@ -42,6 +42,11 @@ Issued at session start as a standalone `<system-reminder>` (separate from the `
 Issued at session start (and possibly again after schema fetches):
 > "The following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query 'select:<name>[,<name>...]' to load tool schemas before calling them: [list]"
 
+## Token Budget Reminder
+**[ADDED 2026-08-19]** A standalone `<system-reminder>`, observed twice in one session — once bundled right after the deferred-tools/agent-types/skills reminders at session start, and again standalone later in the session after a subsequent human turn:
+> "<total_tokens>15000000 tokens left</total_tokens>"
+Unlike the Project Instruction File Delivery block below, it carries no leading preface ("As you answer the user's questions...") and no trailing relevance-disclaimer wrapper — it stands alone as a bare tagged value. Single-pass observation; not yet cross-checked against a session with a different remaining-token count to confirm the value is dynamic rather than fixed.
+
 ## Project Instruction File Delivery
 - Project instruction files (e.g., `CLAUDE.md`) delivered via `<system-reminder>` with the leading preface:
   > "As you answer the user's questions, you can use the following context:"

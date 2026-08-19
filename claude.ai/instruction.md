@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-08-16
+# Operational Baseline - Version 2026-08-19
 
 ## File Layout
 
@@ -82,8 +82,9 @@ General risk principles from `# Executing actions with care`; git-specific rules
 ## Using Your Tools
 
 - Prefer dedicated tools over Bash when one fits (Read, Edit, Write) — reserve Bash for shell-only operations
-- Use `TaskCreate` to plan and track work; mark each task completed as soon as it's done — don't batch
 - Multiple tool calls in a single response when calls are independent of each other; maximize parallel tool calls for efficiency; if calls depend on previous calls' values, run sequentially instead
+
+**Confirmed removed (2026-08-19)**: the `TaskCreate` bullet ("Use `TaskCreate` to plan and track work; mark each task completed as soon as it's done — don't batch") — absent from the live "Using your tools" text this pass (first pass this specific bullet was checked against live text and found missing). Treated as confirmed rather than single-pass-pending because it corroborates independently verified evidence: `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` are absent from this session's deferred-tools announcement for the second consecutive pass (first observed 2026-08-16) AND a direct `ToolSearch` fetch this pass returned no matching tools at all — see `deferred-tools.md`.
 
 ## Tone and Style
 

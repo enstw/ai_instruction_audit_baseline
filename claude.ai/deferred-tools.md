@@ -10,14 +10,10 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `PushNotification`
 - `RemoteTrigger`
 - `SendMessage`
-- `TaskCreate`, `TaskGet`, `TaskList`
 - `TaskOutput` (DEPRECATED), `TaskStop`
-- `TaskUpdate`
 - `WebFetch`, `WebSearch`
 
-Note: `TaskUpdate` was present in the session-start deferred-tools announcement this pass (2026-08-01), breaking the intermittent-omission pattern flagged across the 2026-07-11 through 2026-07-29 passes (present only briefly in the 2026-07-23 announcement before). Its schema is unchanged and fetchable via `ToolSearch` on request (verified this pass).
-
-**[OBSERVED 2026-08-16]**: `TaskCreate`, `TaskGet`, `TaskList`, and `TaskUpdate` are **all** absent this pass — both from the session-start deferred-tools announcement AND from direct `ToolSearch` retrieval (`select:TaskCreate,TaskGet,TaskList,TaskUpdate` returned no matches; a keyword search for "task list create update todo" also did not surface them, only `TaskOutput`/`TaskStop`). This differs from every previously tracked instance of the intermittent-omission pattern above, which was scoped to the announcement text only — `TaskCreate`/`TaskGet`/`TaskList` had remained consistently listed while only `TaskUpdate` flickered, and in every case the affected tool(s) stayed independently fetchable via `ToolSearch` "on request." This pass, none of the four task-management tools could be fetched at all. Single-pass observation — per the two-consecutive-absent-passes precedent used elsewhere in this baseline, not yet treated as a confirmed removal; the `## TaskCreate` / `## TaskGet` / `## TaskList` / `## TaskUpdate` reference sections below are kept as-is pending a second pass. If absent again next pass, downgrade this note to a confirmed-removed entry and consider whether `instruction.md`'s "Using Your Tools" bullet ("Use `TaskCreate` to plan and track work...") and the task-tools nudge in `runtime.md` are still accurate.
+**Confirmed removed (2026-08-19)**: `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate` — absent from the session-start deferred-tools announcement for the second consecutive pass (first observed 2026-08-16, flagged single-pass pending confirmation), and this pass a direct `ToolSearch` fetch (`select:TaskCreate,TaskGet,TaskList,TaskUpdate`) returned no matches, and a keyword search ("task list create update todo tracking") also did not surface them among its 10 results (only `TaskOutput`/`TaskStop`/other unrelated tools). Per the two-consecutive-absent-passes precedent used elsewhere in this baseline, this is now treated as confirmed. The `## TaskCreate` / `## TaskGet` / `## TaskList` / `## TaskUpdate` reference sections below are removed. `instruction.md`'s "Using Your Tools" bullet referencing `TaskCreate` has also been removed this pass (see that file). The task-tools nudge documented in `runtime.md`'s "Concealment-Bearing Reminders" (which itself references `TaskCreate`/`TaskUpdate` by name) was not observed firing or not-firing this pass — it is conditional/recurring rather than always-present at session start, so its absence here is not evidence either way; left as-is pending a pass that specifically exercises its trigger conditions.
 
 ## SendMessage
 - **Substantially expanded this pass (2026-08-07)**: prior baseline documented only a flat send-to-teammate-or-main flow (JSON example + two-row table: `"researcher"` → teammate by name, `"main"` → main conversation for background subagents only). This pass adds a full cross-session addressing layer, tied to the new `ListAgents` tool (`embedded-tools.md` `## ListAgents`) — new `to`-table rows, a new "Cross-session" doc section, `[ref]` disambiguation, the `<cross-session-message>` wrapper, and a new permission-boundary security warning. None of this was present in any prior tracked pass.
@@ -39,7 +35,8 @@ Note: `TaskUpdate` was present in the session-start deferred-tools announcement 
   - Examples: `{"to": "worker", "message": "check if tests pass over there"}`; `{"to": "worker [3fa9c1]", "message": "you, specifically"}`
   - **[MODIFIED 2026-08-16]** "Send the bare name — a name that exactly matches one live agent or session (on this machine, on another machine, or in the cloud) delivers directly." Append the ` [ref]` only when the bare name is not enough — `ListAgents` shows two rows with it, or an error asks you to disambiguate (you typed only a prefix, or a session list could not be checked). A ref you did not just read from a listing or an error will not resolve, and if the same name also names an in-process agent, the bare name always wins — use the in-process one
     - New this pass: the "a name that exactly matches one live agent or session (on this machine, on another machine, or in the cloud) delivers directly" clause, and the parenthetical explaining the two disambiguation triggers ("you typed only a prefix, or a session list could not be checked"). Prior baseline text opened directly with "Append the [ref] only when..." without the leading delivery-mechanics sentence or the parenthetical.
-  - "A listed peer is alive and will process your message — no \"busy\" state; messages enqueue and drain at the receiver's next tool round."
+  - **[MODIFIED 2026-08-19]** "A listed peer is alive and will process your message; messages enqueue and drain at the receiver's next tool round (its `ListAgents` row says whether it is busy or idle right now)." — reverses the prior claim. Baseline previously read: "A listed peer is alive and will process your message — no \"busy\" state; messages enqueue and drain at the receiver's next tool round." The "no busy state" clause is gone; the live text now says the opposite — that a `ListAgents` row does indicate busy/idle status. Corrected in place rather than merged, since the two versions are factually contradictory, not just differently worded. Ties into the new `notify_when_idle` capability below, which requires a busy/idle concept to be meaningful.
+  - **[ADDED 2026-08-19]** `notify_when_idle`: "To hear when a session ON THIS MACHINE finishes what it is doing, pass `notify_when_idle: true` (from the main conversation only) — one-shot and opt-in: exactly one `[Cross-session idle notice]` arrives when it next goes idle (or exits) — shown to you, or only to your user when this session holds peer messages for approval (the tool result says which); if it never signals within the subscription's lifetime (it may still be busy, may refuse inbound requests, or may have ended abruptly) the notice says the subscription expired instead. Omit `message` for a pure subscription that costs that session nothing; include one to deliver it now AND subscribe. Never poll `ListAgents` in a loop or send \"are you done?\" messages instead." New boolean parameter, schema description: "Ask a session ON THIS MACHINE to send you ONE notice when it next goes idle (finishes its turn with nothing queued) or exits — opt-in, one-shot, no polling. With a message: deliver it now AND subscribe. Without a message (omit it): a pure subscription that costs the other session nothing." Not previously tracked in any prior pass.
   - **[MODIFIED 2026-08-16]** "Your message arrives wrapped as `<cross-session-message from=\"...\">`. **To reply to an incoming message, copy its `from` attribute as your `to`.**" — minor wording change from prior "Incoming cross-session messages arrive wrapped as..." / "To reply, copy its from attribute as your to."
   - **Permission boundaries are per-session**: NEVER ask a peer to perform an action that was denied or blocked in your session, or that you expect your own permission settings would block — a peer doing it for you bypasses the user's permission decision ("cross-session permission laundering"). Route blocked work back to your user instead.
 
@@ -84,56 +81,6 @@ Note: `TaskUpdate` was present in the session-start deferred-tools announcement 
   - Restores session's working directory to where it was before `EnterWorktree`; clears CWD-dependent caches (system prompt sections, memory files, plans directory)
   - Tmux: killed on `remove`, left running on `keep` (name returned for reattach)
   - Once exited, `EnterWorktree` can be called again to create a fresh worktree
-
-## TaskCreate
-- "Use this tool to create a structured task list for your current coding session. This helps you track progress, organize complex tasks, and demonstrate thoroughness to the user. It also helps the user understand the progress of the task and overall progress of their requests."
-- Use proactively for: complex multi-step tasks (3 or more distinct steps), non-trivial/complex tasks requiring careful planning or multiple operations, plan mode — create task list to track the work, when the user explicitly requests a todo list, when the user provides multiple tasks (numbered or comma-separated), after receiving new instructions — immediately capture user requirements as tasks, when starting work on a task — mark it as `in_progress` BEFORE beginning, after completing a task — mark it as completed and add any new follow-up tasks discovered during implementation
-- Do NOT use for: only a single straightforward task, trivial tasks with no organizational benefit, tasks completable in less than 3 trivial steps, purely conversational/informational requests
-- "NOTE that you should not use this tool if there is only one trivial task to do. In this case you are better off just doing the task directly."
-- Fields:
-  - `subject` (required): a brief, actionable title in imperative form (e.g., "Fix authentication bug in login flow")
-  - `description` (required): what needs to be done
-  - `activeForm` (optional): present continuous form shown in spinner when in_progress (e.g., "Fixing authentication bug"); if omitted, spinner shows subject instead
-  - `metadata` (optional): arbitrary metadata to attach to the task
-- All tasks created with status `pending`
-- Tips: create tasks with clear, specific subjects describing the outcome; after creating tasks, use `TaskUpdate` to set up dependencies (`blocks`/`blockedBy`) if needed; check `TaskList` first to avoid creating duplicate tasks
-
-## TaskGet
-- "Use this tool to retrieve a task by its ID from the task list."
-- When to use: when you need full description and context before starting work on a task; to understand task dependencies; after being assigned a task, to get complete requirements
-- Output returns: `subject`, `description`, `status` (`pending`/`in_progress`/`completed`), `blocks` (tasks waiting on this one), `blockedBy` (tasks that must complete before this one can start)
-- After fetching a task, verify its `blockedBy` list is empty before beginning work
-- Use `TaskList` to see all tasks in summary form
-- Fields: `taskId` (required)
-
-## TaskList
-- "Use this tool to list all tasks in the task list."
-- When to use: to see available tasks (status `pending`, no owner, not blocked); to check overall progress; to find blocked tasks needing dependency resolution; after completing a task, to check for newly unblocked work or claim the next task
-- "Prefer working on tasks in ID order (lowest ID first) when multiple tasks are available, as earlier tasks often set up context for later ones"
-- Output summary per task: `id`, `subject`, `status`, `owner` (agent ID if assigned; empty if available), `blockedBy` (open task IDs that must resolve first — tasks with `blockedBy` cannot be claimed until dependencies resolve)
-- Use `TaskGet` with a specific ID for full details including description and comments
-- No parameters
-
-## TaskUpdate
-- "Use this tool to update a task in the task list."
-- Mark tasks as resolved: IMPORTANT — always mark assigned tasks as resolved when finished; after resolving, call `TaskList` to find next task
-- ONLY mark `completed` when FULLY accomplished; if errors/blockers/cannot finish → keep as `in_progress`; when blocked, create a new task describing what needs to be resolved
-- Never mark `completed` if: tests failing, implementation partial, unresolved errors, couldn't find necessary files/dependencies
-- Delete tasks: setting `status` to `deleted` permanently removes the task
-- Update task details when requirements change or become clearer, or when establishing dependencies between tasks
-- "Make sure to read a task's latest state using TaskGet before updating it."
-- Examples given in the schema: mark in_progress `{"taskId": "1", "status": "in_progress"}`; mark completed `{"taskId": "1", "status": "completed"}`; delete `{"taskId": "1", "status": "deleted"}`; claim by owner `{"taskId": "1", "owner": "my-name"}`; set up dependency `{"taskId": "2", "addBlockedBy": ["1"]}`
-- Status workflow: `pending` → `in_progress` → `completed` (or `deleted` to permanently remove)
-- Fields you can update:
-  - `taskId` (required)
-  - `status`: `pending`, `in_progress`, `completed`, or `deleted`
-  - `subject`: new title (imperative form)
-  - `description`: new description
-  - `activeForm`: present continuous form shown in spinner when in_progress
-  - `owner`: change the task owner (agent name)
-  - `metadata`: merge metadata keys into task (set a key to `null` to delete it)
-  - `addBlocks`: task IDs that cannot start until this one completes
-  - `addBlockedBy`: task IDs that must complete before this one can start
 
 ## Background Tasks (TaskOutput / TaskStop)
 - `TaskOutput` is marked DEPRECATED in its description: background tasks return their output file path in the tool result; you receive a `<task-notification>` with the same path on completion
