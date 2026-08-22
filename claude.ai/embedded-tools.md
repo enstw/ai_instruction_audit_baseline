@@ -57,7 +57,8 @@ Behavioral directives embedded within the tool descriptions:
 - **Never delegate understanding**: don't write "based on your findings, fix the bug" or "based on the research, implement it"; that pushes synthesis onto the agent. Write prompts that prove understanding — include file paths, line numbers, what specifically to change
 
 ## ListAgents
-- "Lists agents you can SendMessage to — in-process subagents you spawned, other local Claude sessions on this machine, your Claude sessions running in the cloud (when this session has cloud access; a cloud session receives your message but cannot message any session back yet — do not ask it to reply, read its answer in its own transcript), and (when Remote Control is connected here) your account's other sessions — Remote Control sessions on other machines and cloud sessions, each row labeled by kind."
+- "Lists agents you can SendMessage to — in-process subagents you spawned, the teammates on your team, other local Claude sessions on this machine, your Claude sessions running in the cloud (when this session has cloud access; a cloud session receives your message but cannot message any session back yet — do not ask it to reply, read its answer in its own transcript), and (when Remote Control is connected here) your account's other sessions — Remote Control sessions on other machines and cloud sessions, each row labeled by kind."
+- **[ADDED 2026-08-22]**: "the teammates on your team," inserted between "in-process subagents you spawned," and "other local Claude sessions on this machine" — explicitly calls out agent-team teammates as a distinct listed category, separate from in-process subagents and local sessions.
 - **[ADDED 2026-08-16]**: new parenthetical inserted into the cloud-access clause: "; a cloud session receives your message but cannot message any session back yet — do not ask it to reply, read its answer in its own transcript" — clarifies that cloud sessions are one-way SendMessage targets this pass.
 - **[MODIFIED 2026-08-13]**: the closing clause changed from "your Remote Control sessions on other machines" to "your account's other sessions — Remote Control sessions on other machines and cloud sessions, each row labeled by kind" — now explicitly folds cloud sessions into the Remote-Control-gated bucket and adds the "each row labeled by kind" detail describing the listing's presentation.
 - **Modified (2026-08-10 pass)**: the prior "remote bridge sessions, which are reply-only — you can message one only in reply, after it messages you first, and no connector reaches it by name either" language is gone; Remote Control sessions on other machines are now described the same way as any other listed peer, without the reply-only / no-by-name-addressing restriction.
@@ -208,12 +209,13 @@ A skill is a packaged set of instructions the user or project has set up for a p
 - **[ADDED 2026-08-10]** Common single-phase workflows you can chain across turns:
   - **Understand** — parallel readers over relevant subsystems → structured map
   - **Design** — judge panel of N independent approaches → scored synthesis
-  - **Review** — dimensions → find → adversarially verify
+  - **Review** — dimensions → find → adversarially verify **[ADDED 2026-08-22]** "(example below)"
   - **Research** — multi-modal sweep → deep-read → synthesize
   - **Migrate** — discover sites → transform each (worktree isolation) → verify
   - For larger work, run several in sequence — read each result before deciding the next phase; you stay in the loop, each workflow is one well-scoped fan-out
+- **[MODIFIED 2026-08-22]** "Pass the script inline via `script` — do not Write it to a file first." — new lead-in sentence, not previously tracked
 - Parameters: `script` (inline, max 524288 chars), `scriptPath` (file path; takes precedence), `name` (predefined workflow), `resumeFromRunId`, `args` (pass arrays/objects as actual JSON values — NOT JSON-encoded strings), `title`/`description` (ignored — set in meta block)
-- Every invocation automatically persists its script to a file under the session directory; to iterate, edit that file with Write/Edit and re-invoke with `{scriptPath: "<path>"}`
+- **[MODIFIED 2026-08-22]** Every invocation automatically persists its script to a file under the session directory **and returns the path in the tool result**; to iterate, edit that file with Write/Edit and re-invoke with `{scriptPath: "<path>"}` **instead of resending the full script**
 
 ### Script format rules
 - Must begin with `export const meta = { name, description, phases }` — a PURE LITERAL (no variables, function calls, spreads, or template interpolation); `name` and `description` required; optional: `whenToUse` (shown in the workflow list), `phases` (one entry per `phase()` call with `title`/`detail` fields; add `model` when a phase uses a specific model override); phase titles must match `phase()` call titles exactly
