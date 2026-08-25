@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-08-22
+# Operational Baseline - Version 2026-08-25
 
 ## File Layout
 

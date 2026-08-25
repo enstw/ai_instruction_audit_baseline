@@ -43,9 +43,11 @@ Issued at session start (and possibly again after schema fetches):
 > "The following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query 'select:<name>[,<name>...]' to load tool schemas before calling them: [list]"
 
 ## Token Budget Reminder
-**[ADDED 2026-08-19]** A standalone `<system-reminder>`, observed twice in one session — once bundled right after the deferred-tools/agent-types/skills reminders at session start, and again standalone later in the session after a subsequent human turn:
+A standalone `<system-reminder>`: bundled right after the deferred-tools/agent-types/skills reminders at session start, then recurs standalone after subsequent turns:
 > "<total_tokens>15000000 tokens left</total_tokens>"
-Unlike the Project Instruction File Delivery block below, it carries no leading preface ("As you answer the user's questions...") and no trailing relevance-disclaimer wrapper — it stands alone as a bare tagged value. Single-pass observation; not yet cross-checked against a session with a different remaining-token count to confirm the value is dynamic rather than fixed.
+Unlike the Project Instruction File Delivery block below, it carries no leading preface ("As you answer the user's questions...") and no trailing relevance-disclaimer wrapper — it stands alone as a bare tagged value.
+
+**Confirmed dynamic (2026-08-25)**: across one session, the value decremented on every subsequent turn (15000000 → 14965898 → 14957165 → 14956160 → 14943539 → 14910011 → 14903731), confirming it tracks remaining output-token budget rather than being a fixed constant. Also recurs far more frequently than the "observed twice" first noted at ADDED 2026-08-19 — this pass it reappeared after nearly every turn boundary, not just once more later in the session.
 
 ## Project Instruction File Delivery
 - Project instruction files (e.g., `CLAUDE.md`) delivered via `<system-reminder>` with the leading preface:
