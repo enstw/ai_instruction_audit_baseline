@@ -3,8 +3,10 @@
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ## Skill System
-- Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `run`, `init`, `security-review`
+- Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `workflow-authoring`, `run`, `init`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
+- **[ADDED 2026-08-28]**: `workflow-authoring` — new system-built skill, not previously tracked: "Reference for writing a Workflow tool script (script API and gotchas, resume, quality patterns, worked examples). Load before authoring a script for a workflow the user already opted into; it does not itself authorize running one." Ties directly into the `Workflow` tool's own description, which now cross-references "the workflow authoring reference" by name (see `embedded-tools.md` `## Workflow`). Per-skill file added: `workflow-authoring.skill.md`.
+- **[MODIFIED 2026-08-28]** `loop`: interval-omission behavior changed — previously "defaults to 10m" when no interval given; now "Omit the interval to let the model self-pace." (dynamic mode, tied to the `ScheduleWakeup` tool's dynamic-loop pacing). See `loop.skill.md`.
 - **`code-review` description expanded again (2026-08-10)**: the effort-level parenthetical gained a third tier, `ultra`: "Review the current diff, or a PR number/branch/path target, for correctness bugs and reuse/simplification/efficiency cleanups at the given effort level (low/medium: fewer, high-confidence findings; high→max: broader coverage, may include uncertain findings; ultra: deep multi-agent review in the cloud); with no level given, it reuses the level you typed last. Pass --comment to post findings as inline PR comments, or --fix to apply the findings to the working tree after the review." This lines up with the new "ultrareview" guidance added to `instruction.md`'s Session-Specific Guidance this pass (`/code-review ultra` / deprecated `/ultrareview` alias, launches a billed multi-agent cloud review).
   - Prior (2026-08-07) reappearance context: `code-review` had been absent since being confirmed removed 2026-07-23, came back 2026-08-07 with a two-tier description (PR/branch/path target support, effort-level memory) — see git history for that version.
 - **Confirmed removed (2026-08-10)**: `review` — absent in both the 2026-08-07 and 2026-08-10 passes, after being present and stable through 2026-08-04 (`review.skill.md`: "Review a GitHub pull request; for your working diff use /code-review"), per the two-consecutive-absent-passes precedent used for prior skill removals. Per-skill file (`review.skill.md`) removed from the baseline this pass.
@@ -21,6 +23,7 @@ Injected via `<system-reminder>` tags during the session, not present at system 
   - `loop.skill.md`
   - `schedule.skill.md`
   - `claude-api.skill.md`
+  - `workflow-authoring.skill.md`
   - `run.skill.md`
   - `init.skill.md`
   - `security-review.skill.md`
