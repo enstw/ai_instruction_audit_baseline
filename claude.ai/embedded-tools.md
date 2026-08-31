@@ -196,12 +196,11 @@ A skill is a packaged set of instructions the user or project has set up for a p
 ## Workflow
 
 - Execute a workflow script that orchestrates multiple subagents deterministically; runs in the background — returns immediately with a task ID; `<task-notification>` arrives on completion; use `/workflows` to watch live progress
-- **[ADDED 2026-08-10]** "A workflow structures work across many agents — to be comprehensive (decompose and cover in parallel), to be confident (independent perspectives and adversarial checks before committing), or to take on scale one context can't hold (migrations, audits, broad sweeps). The script is where you encode that structure: what fans out, what verifies, what synthesizes."
-  - **Not observed this pass (2026-08-28)**: this sentence was absent from the live tool description immediately after the opening "Execute a workflow script..." paragraph — the text went straight from that paragraph to "ONLY call this tool when the user has explicitly opted into multi-agent orchestration." First pass checking this specific sentence against live text and finding it missing; not yet corroborated by a second consecutive absent pass, so left in place per the two-consecutive-absent-passes precedent rather than removed outright.
+- **Confirmed removed (2026-08-31)**: "A workflow structures work across many agents — to be comprehensive (decompose and cover in parallel), to be confident (independent perspectives and adversarial checks before committing), or to take on scale one context can't hold (migrations, audits, broad sweeps). The script is where you encode that structure: what fans out, what verifies, what synthesizes." — absent from the live tool description for the second consecutive pass (first observed absent 2026-08-28), per the two-consecutive-absent-passes precedent used elsewhere in this baseline.
 - **ONLY call when the user has explicitly opted into multi-agent orchestration**; workflows can spawn dozens of agents and consume large amounts of tokens — the user must request that scale, not have it inferred
 - Explicit opt-in triggers:
   - The user included the keyword `"ultracode"` in their prompt (you'll see a system-reminder confirming it)
-  - Ultracode is on for the session (a system-reminder confirms it)
+  - Ultracode is on for the session (a system-reminder confirms it) **[MODIFIED 2026-08-31]** — see **Ultracode** in the workflow authoring reference
   - The user directly asked you to run a workflow or use multi-agent orchestration in their own words (`"use a workflow"`, `"run a workflow"`, `"fan out agents"`, `"orchestrate this with subagents"`); the ask must be in the user's words — a task that would merely benefit from a workflow does not count
   - The user invoked a skill or slash command whose instructions tell you to call Workflow
   - The user asked you to run a specific named or saved workflow
@@ -263,6 +262,7 @@ A skill is a packaged set of instructions the user or project has set up for a p
 - Longest unchanged prefix of `agent()` calls returns cached results instantly; first edited/new call and everything after it runs live; same script + same args → 100% cache hit
 
 ### Workflow size guideline
+- **[ADDED 2026-08-31]** "Before writing a script, load the `workflow-authoring` skill — the workflow authoring reference: script API and gotchas, resume, the **Ultracode** section, quality patterns, worked examples." — verbatim tool-description sentence, positioned (in the live text) right after the canonical multi-stage pattern code example and before the workflow-size-guideline sentence below; its existence was previously only inferred via a cross-reference note in `workflow-authoring.skill.md` (added 2026-08-28) but never recorded verbatim here until this pass
 - The session carries a default workflow size guideline (observed this pass: "medium — keep workflows under 15 agents"); a guideline, not a hard limit — follow it unless the user's prompt calls for a different scale
 - The user can raise or remove it with "Dynamic workflow size" in `/config`
 
