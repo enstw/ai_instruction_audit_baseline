@@ -69,5 +69,15 @@ Runtime injections that explicitly forbid surfacing themselves to the user:
 - **Date-change notification** (when system clock advances mid-session): "The date has changed. Today's date is now $date. DO NOT mention this to the user explicitly because they are already aware."
 - See "System" section in `instruction.md` for general `<system-reminder>` behavior documentation
 
+## Attribution Reminder
+**[ADDED 2026-09-09]**: standalone `<system-reminder>`, observed at session start, not previously tracked:
+> "Attribution for git commits and pull requests you create from here on (this replaces any earlier attribution guidance):
+> - End git commit messages with:
+> Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+> - End pull request descriptions with:
+> 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+- The `Co-Authored-By` name matches the session's current model name ($model_name); generalize accordingly
+- The reminder's own text explicitly says it "replaces any earlier attribution guidance" — this corroborates the companion change in `embedded-tools.md`'s `Bash` tool `## Committing changes with git` / `## Creating pull requests` sections, where the previously hardcoded `Co-Authored-By` trailer and `🤖 Generated with [Claude Code]` PR footer have been replaced with a generic instruction to use "the attribution lines given in the conversation's system-reminder, when one is present." Attribution content has moved from static tool-description text to this dynamic, per-session runtime reminder.
+
 ## Tagged Acknowledgments
 - After a successful `ToolSearch` lookup, a `Tool loaded.` user-tagged message is appended; the message bears no actual user input

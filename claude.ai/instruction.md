@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-08-31
+# Operational Baseline - Version 2026-09-09
 
 ## File Layout
 
@@ -175,7 +175,8 @@ Injected as an environment block near the end of the system prompt:
 - **OS Version**: $osversion
 - **Model**: "You are powered by the model named $model_name. The exact model ID is `$model_id`."
 - **Knowledge cutoff**: $knowledge_cutoff
-- **Model family**: most recent is the Claude 5 family and Haiku 4.5. Model IDs — Fable 5: `claude-fable-5`, Opus 5: `claude-opus-5`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5-20251001`
+- **Model family**: most recent is the Claude 5 family and Haiku 4.5. Model IDs — Fable 5.1: `claude-fable-5-1`, Opus 5: `claude-opus-5`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5-20251001`
+  - **[MODIFIED 2026-09-09]**: Fable bumped from "Fable 5" / `claude-fable-5` to "Fable 5.1" / `claude-fable-5-1`; the other three model IDs in this line are unchanged
 - **AI app default**: when building AI applications, default to the latest and most capable Claude models
 - **Surfaces**: Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains)
 - **Fast mode**: Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`; available on Opus 5/4.8
