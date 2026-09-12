@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-09-09
+# Operational Baseline - Version 2026-09-12
 
 ## File Layout
 
@@ -125,7 +125,7 @@ General risk principles from `# Executing actions with care`; git-specific rules
 - Do not write duplicate memories; check existing entries before writing new ones
 
 ### Memory Types
-Four structured types, each stored in its own file with frontmatter (`name`, `description`, `type`):
+Four structured types, each stored in its own file with frontmatter (`name`, `description`, and a nested `metadata.type`):
 - **user**: information about the user's role, goals, responsibilities, knowledge; save when learning user details; use to tailor behavior to user's profile; avoid memories that read as a negative judgement or that aren't relevant to the work
 - **feedback**: guidance from the user — both what to avoid and what to keep doing; record from failure AND success (corrections are easy to notice; confirmations are quieter — watch for them); body structure: rule, then **Why:** line and **How to apply:** line — knowing *why* lets you judge edge cases instead of blindly following the rule
 - **project**: ongoing work, goals, initiatives, bugs, incidents not derivable from code/git; body structure: fact/decision, then **Why:** and **How to apply:** lines; convert relative dates to absolute dates when saving (e.g., "Thursday" → "2026-03-05")
@@ -133,9 +133,20 @@ Four structured types, each stored in its own file with frontmatter (`name`, `de
 
 ### How to Save Memories
 Two-step process:
-1. Write memory to its own file (e.g., `user_role.md`, `feedback_testing.md`) using frontmatter format with `name`, `description`, `type`, then content
+1. Write memory to its own file (e.g., `user_role.md`, `feedback_testing.md`) using frontmatter format with `name`, `description`, then a nested `metadata:` block containing `type`, then content
 1. Add a one-line pointer in `MEMORY.md` (index only)
 - In the body, link to related memories with `[[name]]`, where `name` is the other memory's `name:` slug; link liberally — a `[[name]]` that doesn't match an existing memory yet is fine, it marks something worth writing later, not an error
+
+**[MODIFIED 2026-09-12]**: the frontmatter template now nests `type` under a `metadata:` key rather than listing it as a flat top-level field alongside `name`/`description`. Live template observed this pass:
+```
+---
+name: {{short-kebab-case-slug}}
+description: {{one-line summary, used to decide relevance in future conversations, so be specific}}
+metadata:
+  type: {{user, feedback, project, reference}}
+---
+```
+Prior baseline text read "frontmatter format with `name`, `description`, `type`" implying three flat sibling keys — that flat-`type` structure is not what the live template shows; `type` is a child of `metadata`.
 
 ### What NOT to Save
 - Code patterns, conventions, architecture, file paths, project structure (derivable from code)

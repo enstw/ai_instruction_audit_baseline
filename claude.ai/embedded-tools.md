@@ -88,9 +88,10 @@ Behavioral directives embedded within the tool descriptions:
 - Sleep avoidance:
   - Do not sleep between commands that can run immediately
   - Use `Monitor` for streaming events; for one-shot "wait until done" use `Bash` with `run_in_background`
-  - Long leading `sleep` commands are blocked; to poll until a condition, use `Monitor` with an until-loop (e.g., `until <check>; do sleep 2; done`)
+  - **[ADDED 2026-09-12]** If your command is long running and you would like to be notified when it finishes, use `run_in_background` — no sleep needed (distinct from the next bullet, which covers a task already started in the background)
   - Do not retry failing commands in a sleep loop — diagnose root cause
   - If waiting for a `run_in_background` task, you'll be notified — do not poll
+  - Long leading `sleep` commands are blocked; to poll until a condition, use `Monitor` with an until-loop (e.g., `until <check>; do sleep 2; done`) — you get a notification when the loop exits. **[ADDED 2026-09-12]** Do not chain shorter sleeps to work around the block
 - `find`: search from `.` (or specific path), not `/` — full filesystem scans can exhaust resources
 - `find -regex` with alternation: put the longest alternative first — e.g., `'.*\.\(tsx\|ts\)'` not `'.*\.\(ts\|tsx\)'` — the second silently skips `.tsx` files
 
