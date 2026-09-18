@@ -9,6 +9,7 @@ Injected via `<system-reminder>` tags during the session, not present at system 
 - **[MODIFIED 2026-08-28]** `loop`: interval-omission behavior changed — previously "defaults to 10m" when no interval given; now "Omit the interval to let the model self-pace." (dynamic mode, tied to the `ScheduleWakeup` tool's dynamic-loop pacing). See `loop.skill.md`.
 - **`code-review` description expanded again (2026-08-10)**: the effort-level parenthetical gained a third tier, `ultra`: "Review the current diff, or a PR number/branch/path target, for correctness bugs and reuse/simplification/efficiency cleanups at the given effort level (low/medium: fewer, high-confidence findings; high→max: broader coverage, may include uncertain findings; ultra: deep multi-agent review in the cloud); with no level given, it reuses the level you typed last. Pass --comment to post findings as inline PR comments, or --fix to apply the findings to the working tree after the review." This lines up with the new "ultrareview" guidance added to `instruction.md`'s Session-Specific Guidance this pass (`/code-review ultra` / deprecated `/ultrareview` alias, launches a billed multi-agent cloud review).
   - **[ADDED 2026-09-15]**: one more sentence appended to the description, not previously tracked: "For ultra on a GitHub.com PR target, --post asks to post the finished review's findings to the PR as a single comment from the user's GitHub account (not a review; the launch dialog still confirms in interactive sessions, while non-interactive mode posts on the flag alone) and --no-post hides that option." New `--post`/`--no-post` flags for `ultra` reviews of GitHub.com PR targets.
+  - **[MODIFIED 2026-09-18]**: the opening clause changed from "for correctness bugs and reuse/simplification/efficiency cleanups" to "for correctness bugs (plus reuse/simplification/efficiency cleanups where the model's review recipe covers them)" — the flat "and" list became a parenthetical qualified by "where the model's review recipe covers them". Rest of the description (effort-level parenthetical, --comment/--fix, the 2026-09-15 --post/--no-post sentence) unchanged.
   - Prior (2026-08-07) reappearance context: `code-review` had been absent since being confirmed removed 2026-07-23, came back 2026-08-07 with a two-tier description (PR/branch/path target support, effort-level memory) — see git history for that version.
 - **Confirmed removed (2026-08-10)**: `review` — absent in both the 2026-08-07 and 2026-08-10 passes, after being present and stable through 2026-08-04 (`review.skill.md`: "Review a GitHub pull request; for your working diff use /code-review"), per the two-consecutive-absent-passes precedent used for prior skill removals. Per-skill file (`review.skill.md`) removed from the baseline this pass.
 - **Confirmed removed (2026-07-23)**: `verify` — absent in both the 2026-07-20 and 2026-07-23 passes, after being stable and unchanged across every audit pass from 2026-05-21 through 2026-07-17, per the precedent used for the JSON Parameters/Tool Invocation closing-directive removal (two consecutive absent passes following long stability). Per-skill file (`verify.skill.md`) removed from the baseline that pass. (`code-review` was also confirmed removed alongside `verify` on 2026-07-23, but see above — it has since reappeared as of 2026-08-07.)
@@ -71,6 +72,28 @@ Runtime injections that explicitly forbid surfacing themselves to the user:
 - **Task-tools nudge** (recurs across the session whenever the task tools haven't been used): "The task tools haven't been used recently. If you're working on tasks that would benefit from tracking progress, consider using TaskCreate to add new tasks and TaskUpdate to update task status (set to in_progress when starting, completed when done). Also consider cleaning up the task list if it has become stale. Only use these if relevant to the current work. This is just a gentle reminder - ignore if not applicable." — note: no concealment instruction ("NEVER mention this reminder to the user") in this version
 - **Date-change notification** (when system clock advances mid-session): "The date has changed. Today's date is now $date. DO NOT mention this to the user explicitly because they are already aware."
 - See "System" section in `instruction.md` for general `<system-reminder>` behavior documentation
+
+## Environment Reminders
+**[ADDED 2026-09-18, single pass]**: content previously documented in `instruction.md`'s `## Environment` section as bare fields embedded directly in the system prompt (`Working Directory`, `Is a git repository`, `Platform`, `Shell`, `OS Version`, `Model`, `Knowledge cutoff`) now arrives instead as two separate standalone `<system-reminder>` tags, injected after the human turn rather than as part of the static system prompt:
+- A `# Environment` reminder with a new framing sentence not previously tracked:
+  > "# Environment
+  > You have been invoked in the following environment: 
+  >  - Primary working directory: $workdir
+  >  - Is a git repository: $boolean
+  >  - Platform: $platform
+  >  - Shell: $shell
+  >  - OS Version: $osversion"
+  - The field is now labeled `Primary working directory` rather than the previously-tracked `Working Directory`.
+- A second, bare (untagged) reminder immediately following it, carrying the Model and Knowledge cutoff fields combined into one reminder:
+  > "You are powered by the model named $model_name. The exact model ID is `$model_id`. Assistant knowledge cutoff is $knowledge_cutoff."
+- The remaining Environment fields (Model family, AI app default, Surfaces, Fast mode) are unaffected and still arrive embedded in the main system prompt — see `instruction.md` `## Environment`.
+- Single-pass observation — pending a second consecutive pass before treating as stable, per the precedent used elsewhere in this baseline (e.g. the "Project Instruction File Delivery" 2026-09-12/09-15 restructure this closely parallels).
+
+## Primary-Working-Directory Update Reminder
+**[ADDED 2026-09-18, single pass]**: a lightweight `<system-reminder>` observed firing mid-session whenever the tracked "Primary working directory" changes (observed here after `Read` tool calls into a subdirectory and back out) — distinct from the session-start `# Environment` reminder above (no "You have been invoked..." framing, no git-repo/platform/shell/OS fields, just the one changed field):
+> "# Environment update
+>  - Primary working directory: $new_path (was $old_path)"
+- Not previously tracked in any prior pass.
 
 ## Attribution Reminder
 **[ADDED 2026-09-09]**: standalone `<system-reminder>`, observed at session start, not previously tracked:
