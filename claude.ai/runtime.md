@@ -74,7 +74,7 @@ Runtime injections that explicitly forbid surfacing themselves to the user:
 - See "System" section in `instruction.md` for general `<system-reminder>` behavior documentation
 
 ## Environment Reminders
-**[ADDED 2026-09-18, single pass]**: content previously documented in `instruction.md`'s `## Environment` section as bare fields embedded directly in the system prompt (`Working Directory`, `Is a git repository`, `Platform`, `Shell`, `OS Version`, `Model`, `Knowledge cutoff`) now arrives instead as two separate standalone `<system-reminder>` tags, injected after the human turn rather than as part of the static system prompt:
+**[ADDED 2026-09-18, confirmed stable 2026-09-21]**: content previously documented in `instruction.md`'s `## Environment` section as bare fields embedded directly in the system prompt (`Working Directory`, `Is a git repository`, `Platform`, `Shell`, `OS Version`, `Model`, `Knowledge cutoff`) now arrives instead as two separate standalone `<system-reminder>` tags, injected after the human turn rather than as part of the static system prompt:
 - A `# Environment` reminder with a new framing sentence not previously tracked:
   > "# Environment
   > You have been invoked in the following environment: 
@@ -87,13 +87,13 @@ Runtime injections that explicitly forbid surfacing themselves to the user:
 - A second, bare (untagged) reminder immediately following it, carrying the Model and Knowledge cutoff fields combined into one reminder:
   > "You are powered by the model named $model_name. The exact model ID is `$model_id`. Assistant knowledge cutoff is $knowledge_cutoff."
 - The remaining Environment fields (Model family, AI app default, Surfaces, Fast mode) are unaffected and still arrive embedded in the main system prompt — see `instruction.md` `## Environment`.
-- Single-pass observation — pending a second consecutive pass before treating as stable, per the precedent used elsewhere in this baseline (e.g. the "Project Instruction File Delivery" 2026-09-12/09-15 restructure this closely parallels).
+- Observed identically again on 2026-09-21 (second consecutive pass) — per the two-consecutive-pass precedent used elsewhere in this baseline (e.g. the "Project Instruction File Delivery" 2026-09-12/09-15 restructure this closely parallels), now treated as stable rather than pending.
 
 ## Primary-Working-Directory Update Reminder
-**[ADDED 2026-09-18, single pass]**: a lightweight `<system-reminder>` observed firing mid-session whenever the tracked "Primary working directory" changes (observed here after `Read` tool calls into a subdirectory and back out) — distinct from the session-start `# Environment` reminder above (no "You have been invoked..." framing, no git-repo/platform/shell/OS fields, just the one changed field):
+**[ADDED 2026-09-18, confirmed stable 2026-09-21]**: a lightweight `<system-reminder>` observed firing mid-session whenever the tracked "Primary working directory" changes (observed on 2026-09-18 after `Read` tool calls into a subdirectory and back out; observed again on 2026-09-21 after a `Bash` command containing a `cd` into a subdirectory) — distinct from the session-start `# Environment` reminder above (no "You have been invoked..." framing, no git-repo/platform/shell/OS fields, just the one changed field):
 > "# Environment update
 >  - Primary working directory: $new_path (was $old_path)"
-- Not previously tracked in any prior pass.
+- Second consecutive pass observing this trigger — now treated as stable.
 
 ## Attribution Reminder
 **[ADDED 2026-09-09]**: standalone `<system-reminder>`, observed at session start, not previously tracked:

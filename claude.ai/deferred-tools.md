@@ -10,10 +10,10 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - `PushNotification`
 - `RemoteTrigger`
 - `SendMessage`
-- `TaskOutput` (DEPRECATED), `TaskStop`
+- `TaskStop`
 - `WebFetch`, `WebSearch`
 
-**[PENDING removal, single pass, 2026-09-18]**: `TaskOutput` — absent from this session's session-start deferred-tools announcement (which listed only 14 tools, `TaskStop` but not `TaskOutput`), and unfetchable this pass via both a direct `ToolSearch select:TaskOutput` (returned "No matching deferred tools found") and a keyword search ("task output background result", 10 results, `TaskOutput` not among them). First pass observing this absence — per the two-consecutive-absent-passes precedent used elsewhere in this baseline (e.g. `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` above), not yet treated as confirmed removed; the `## Background Tasks (TaskOutput / TaskStop)` reference section below is left as-is pending a second pass.
+**Confirmed removed (2026-09-21)**: `TaskOutput` — absent from the session-start deferred-tools announcement for the second consecutive pass (first observed 2026-09-18, flagged single-pass pending), and this pass a direct `ToolSearch select:TaskOutput` fetch again returned "No matching deferred tools found". Per the two-consecutive-absent-passes precedent used elsewhere in this baseline (e.g. `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` above), now treated as confirmed. The `## Background Tasks (TaskOutput / TaskStop)` reference section below has been reduced to `## Background Tasks (TaskStop)`, with the `TaskOutput` bullet removed.
 
 **Confirmed removed (2026-08-19)**: `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate` — absent from the session-start deferred-tools announcement for the second consecutive pass (first observed 2026-08-16, flagged single-pass pending confirmation), and this pass a direct `ToolSearch` fetch (`select:TaskCreate,TaskGet,TaskList,TaskUpdate`) returned no matches, and a keyword search ("task list create update todo tracking") also did not surface them among its 10 results (only `TaskOutput`/`TaskStop`/other unrelated tools). Per the two-consecutive-absent-passes precedent used elsewhere in this baseline, this is now treated as confirmed. The `## TaskCreate` / `## TaskGet` / `## TaskList` / `## TaskUpdate` reference sections below are removed. `instruction.md`'s "Using Your Tools" bullet referencing `TaskCreate` has also been removed this pass (see that file). The task-tools nudge documented in `runtime.md`'s "Concealment-Bearing Reminders" (which itself references `TaskCreate`/`TaskUpdate` by name) was not observed firing or not-firing this pass — it is conditional/recurring rather than always-present at session start, so its absence here is not evidence either way; left as-is pending a pass that specifically exercises its trigger conditions.
 
@@ -90,13 +90,7 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
   - Tmux: killed on `remove`, left running on `keep` (name returned for reattach)
   - Once exited, `EnterWorktree` can be called again to create a fresh worktree
 
-## Background Tasks (TaskOutput / TaskStop)
-- `TaskOutput` is marked DEPRECATED in its description: background tasks return their output file path in the tool result; you receive a `<task-notification>` with the same path on completion
-  - For bash tasks: prefer `Read` on the output file path (contains stdout/stderr)
-  - For local_agent tasks: use the Agent tool result directly; do NOT Read the `.output` file — it is a symlink to the full sub-agent conversation transcript (JSONL) and will overflow context
-  - For remote_agent tasks: prefer `Read` on the output file path
-  - `block=true` (default) waits for completion; `block=false` non-blocking; `timeout` default 30000 ms, max 600000 ms, min 0
-  - Works with all task types: background shells, async agents, and remote sessions; task IDs can be found using the `/tasks` command
+## Background Tasks (TaskStop)
 - `TaskStop`: stops a running background task by `task_id`; to stop an agent-team teammate, pass its agent ID (`"name@team"`) or bare teammate name as `task_id`; to stop a background agent spawned with a name, pass that name as `task_id`; `shell_id` param is deprecated — use `task_id` instead
 
 ## NotebookEdit
