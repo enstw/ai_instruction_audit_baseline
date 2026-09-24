@@ -48,7 +48,7 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 
 ## DesignSync
 - Reads and updates the user's claude.ai/design design-system projects through their claude.ai login (or, for sessions without one, a dedicated design authorization from `/design-login`)
-- Use together with the `/design-sync` skill to keep a local component library in sync with a Claude Design project — incrementally, one component at a time, never as a wholesale replace
+- **[MODIFIED 2026-09-24]** "Use this only with the `/design-sync` skill, which the user starts, to keep a local component library in sync with one of those projects — incrementally, one component at a time, never as a wholesale replace." Prior baseline read "Use together with the `/design-sync` skill to keep a local component library in sync with a Claude Design project — ..." — wording tightened to "only" (restrictive) and gained the "which the user starts" clause; no change to the rest of the sentence
 - Dispatches on `method`:
   - **Read methods** (no permission prompt once design scopes are granted — first call may prompt to add design-system access):
     - `list_projects` — list design-system projects the user can write to; returns name, owner, projectId, updatedAt; filtered to writable projects only
@@ -140,7 +140,8 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - **[MODIFIED 2026-08-13]** the `tail -f log | grep -m 1` pitfall now includes the underlying mechanism: "if the log goes quiet after the match, `tail` never receives SIGPIPE and the pipeline hangs anyway" (previously stated only the symptom — "pipe hangs after match if log goes quiet" — without the SIGPIPE cause)
 - Pick by how many notifications you need:
   - **One** ("tell me when X is ready / build finishes") → use `Bash` with `run_in_background` and a command that exits when condition is true (e.g., `until grep -q "Ready in" dev.log; do sleep 0.5; done`)
-  - **One per occurrence, indefinitely** ("every ERROR line") → `Monitor` with unbounded command (`tail -f`, `inotifywait -m`, `while true`)
+  - **One per occurrence, until the monitor expires (re-arm to continue)** ("every ERROR line") → `Monitor` with unbounded command (`tail -f`, `inotifywait -m`, `while true`)
+    - **[MODIFIED 2026-09-24]**: bucket label changed from "One per occurrence, indefinitely" — ties to the 2026-09-15 removal of `persistent` mode: even this bucket now always expires and must be manually re-armed, so "indefinitely" no longer accurately describes it
   - **One per occurrence, until known end** ("each CI step result, stop when run completes") → `Monitor` with command that emits lines and then exits
 - "Don't use an unbounded command for a single notification" — never exits, monitor stays armed until timeout; `tail -f log | grep -m 1 ...` does NOT fix this (pipe hangs after match if log goes quiet)
 - Script quality:

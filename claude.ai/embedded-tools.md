@@ -198,6 +198,7 @@ A skill is a packaged set of instructions the user or project has set up for a p
   - **The long fallback heartbeat** (something else — a Monitor, a task notification — is the primary wake signal): 1200s+, so quiet wakeups stay rare
   - **Idle ticks with no specific signal to watch**: default to **1200s–1800s** (20–30 min); the loop still checks back regularly, and the user can always interrupt if they need you sooner
 - `reason` field: one short sentence explaining the chosen delay; goes to telemetry and is shown to the user; be specific
+- **[ADDED 2026-09-24]** `noop` (boolean): "true = nothing changed (you checked and there is nothing to report). false = something happened worth keeping (edited a file, posted a message, advanced state, surfaced a finding). Consecutive noop:true ticks are collapsed in the user's terminal view and tracked as a streak." Required unless `stop` is true. Not previously tracked in this baseline.
 
 ## Workflow
 

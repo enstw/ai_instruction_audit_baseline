@@ -1,4 +1,4 @@
-# Operational Baseline - Version 2026-09-21
+# Operational Baseline - Version 2026-09-24
 
 ## File Layout
 
@@ -182,11 +182,13 @@ Prior baseline text read "frontmatter format with `name`, `description`, `type`"
 
 Injected as an environment block near the end of the system prompt:
 
-- **Model family**: most recent is the Claude 5 family and Haiku 4.5. Model IDs — Fable 5.1: `claude-fable-5-1`, Opus 5: `claude-opus-5`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5-20251001`
+- **Model family**: most recent is the Claude 5 family and Haiku 4.5. Model IDs — Fable 5.1: `claude-fable-5-1`, Opus 5.5: `claude-opus-5-5`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5-20251001`
   - **[MODIFIED 2026-09-09]**: Fable bumped from "Fable 5" / `claude-fable-5` to "Fable 5.1" / `claude-fable-5-1`; the other three model IDs in this line are unchanged
+  - **[MODIFIED 2026-09-24]**: Opus bumped from "Opus 5" / `claude-opus-5` to "Opus 5.5" / `claude-opus-5-5`; the other three model IDs in this line are unchanged
 - **AI app default**: when building AI applications, default to the latest and most capable Claude models
 - **Surfaces**: Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains)
-- **Fast mode**: Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`; available on Opus 5/4.8
+- **Fast mode**: Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model); can be toggled with `/fast`
+  - **[REMOVED 2026-09-24, single-pass pending]**: the trailing "; available on Opus 5/4.8" clause is absent this pass — the live sentence now ends at "/fast." with nothing following. Stable since at least 2026-08-07 (the earlier "/4.7" sub-clause was confirmed dropped that pass, leaving "Opus 5/4.8" stable across every pass since). Per the two-consecutive-absent-passes precedent used elsewhere in this baseline, not yet treated as confirmed — needs one more pass observing the same absence.
 
 **[MODIFIED 2026-09-18, confirmed stable 2026-09-21]**: `Working Directory`, `Is a git repository`, `Platform`, `Shell`, `OS Version`, `Model`, and `Knowledge cutoff` — previously documented directly above as bare fields embedded in this same in-system-prompt Environment block — are no longer part of the static system prompt text. As of 2026-09-18, the live main system prompt's own `# Environment` section contains only the four bullets retained above (Model family, AI app default, Surfaces, Fast mode); the other seven fields instead arrive via two separate standalone `<system-reminder>` tags injected after the human turn: one tagged `# Environment` with a new framing sentence ("You have been invoked in the following environment:") carrying `Primary working directory` (renamed from `Working Directory`), `Is a git repository`, `Platform`, `Shell`, `OS Version`; and one bare (untagged) reminder carrying the Model line and Knowledge cutoff together ("You are powered by the model named $model_name. The exact model ID is `$model_id`. Assistant knowledge cutoff is $knowledge_cutoff."). See `runtime.md` "Environment Reminders" for the moved content. Observed identically again on 2026-09-21 — per the two-consecutive-pass precedent used elsewhere in this baseline, now treated as the stable current format.
 
