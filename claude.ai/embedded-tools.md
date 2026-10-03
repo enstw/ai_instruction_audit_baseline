@@ -31,13 +31,15 @@ text unchanged from the last-known version in `## ToolSearch` below. It was neve
 the 2026-08-07 pass already confirmed it functional despite being undocumented — so this is a visibility
 restoration, not a functional change.
 
+**[ADDED 2026-10-03]** a standalone paragraph following the tool/skill listings in the prompt preamble, not previously tracked: "If you intend to call multiple tools and there are no dependencies between the calls, make all of the independent calls in the same function_calls block, otherwise you MUST wait for previous calls to finish first to determine the dependent values."
+
 Behavioral directives embedded within the tool descriptions:
 
 ## Agent
 **[MODIFIED 2026-09-30]** description substantially condensed; prior bullets ("If the target is already known, use the direct tool...", short-description requirement, "Trust but verify", "Don't race", "Writing the prompt", "Never delegate understanding", "If user requests agents 'in parallel', MUST send a single message", "Clearly tell the agent whether to write code or just do research", "If agent description mentions proactive use") are no longer in the live text. Live text:
 - "Launch a new agent to handle complex, multi-step tasks. Each agent type has specific capabilities and tools available to it."
 - "Available agent types are listed in <system-reminder> messages in the conversation." (type list is a runtime-layer injection; see "Subagent Types Reminder" in `runtime.md`)
-- "When using the Agent tool, specify a subagent_type parameter to select which agent type to use. When omitted, the general-purpose agent is used."
+- "When using the Agent tool, specify a subagent_type parameter to select which agent type to use. If omitted, the general-purpose agent is used."
 - `## When to use`: "Reach for this when the task matches an available agent type, when you have independent work to run in parallel, or when answering would mean reading across several files — delegate it and you keep the conclusion, not the file dumps. For a single-fact lookup where you already know the file, symbol, or value, search directly. Once you've delegated a search, don't also run it yourself — wait for the result."
 - "The agent's final report is not shown to the user — relay what matters."
 - "Use SendMessage with the agent's ID or name to continue a previously spawned agent with its context intact; a new Agent call starts fresh."
