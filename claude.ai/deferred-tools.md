@@ -91,7 +91,8 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
   - Once exited, `EnterWorktree` can be called again to create a fresh worktree
 
 ## Background Tasks (TaskStop)
-- `TaskStop`: stops a running background task by `task_id`; to stop an agent-team teammate, pass its agent ID (`"name@team"`) or bare teammate name as `task_id`; to stop a background agent spawned with a name, pass that name as `task_id`; `shell_id` param is deprecated — use `task_id` instead
+- `TaskStop`: stops a running background task by `task_id`; to stop an agent-team teammate, pass its agent ID or bare teammate name as `task_id`; to stop a background agent spawned with a name, pass that name as `task_id`; `shell_id` param is deprecated — use `task_id` instead
+  - **[MODIFIED 2026-10-06]** the `"name@team"` format example for the agent ID is gone: prior text read "pass its agent ID (`\"name@team\"`) or bare teammate name as task_id"; live text now reads "To stop an agent-team teammate, pass its agent ID or bare teammate name as task_id". The `task_id` parameter description now also reads "The ID of the background task to stop. Agent-team teammates and named background agents are also accepted by agent ID or name."
 
 ## NotebookEdit
 - Replaces, inserts, or deletes a single cell in a Jupyter notebook (.ipynb file)

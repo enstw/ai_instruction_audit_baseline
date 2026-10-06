@@ -3,8 +3,9 @@
 Injected via `<system-reminder>` tags during the session, not present at system prompt start:
 
 ## Skill System
-- Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `workflow-authoring`, `run`, `init`, `security-review`
+- Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `workflow-authoring`, `run`, `plugin-authoring`, `init`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
+- **[ADDED 2026-10-06]**: `plugin-authoring` — new system-built skill, not previously tracked: "Make a mod: a live pane, band, status line, toast or hook inside Claude Code (terminal or desktop Code tab), written as a plugin of function hooks that hot-reloads in this session. Load before writing or debugging a hooks module." Listed between `run` and `init`. Per-skill file added: `plugin-authoring.skill.md`.
 - **[ADDED 2026-08-28]**: `workflow-authoring` — new system-built skill, not previously tracked: "Reference for writing a Workflow tool script (script API and gotchas, resume, quality patterns, worked examples). Load before authoring a script for a workflow the user already opted into; it does not itself authorize running one." Ties directly into the `Workflow` tool's own description, which now cross-references "the workflow authoring reference" by name (see `embedded-tools.md` `## Workflow`). Per-skill file added: `workflow-authoring.skill.md`.
 - **[MODIFIED 2026-08-28]** `loop`: interval-omission behavior changed — previously "defaults to 10m" when no interval given; now "Omit the interval to let the model self-pace." (dynamic mode, tied to the `ScheduleWakeup` tool's dynamic-loop pacing). See `loop.skill.md`.
 - **`code-review` description expanded again (2026-08-10)**: the effort-level parenthetical gained a third tier, `ultra`: "Review the current diff, or a PR number/branch/path target, for correctness bugs and reuse/simplification/efficiency cleanups at the given effort level (low/medium: fewer, high-confidence findings; high→max: broader coverage, may include uncertain findings; ultra: deep multi-agent review in the cloud); with no level given, it reuses the level you typed last. Pass --comment to post findings as inline PR comments, or --fix to apply the findings to the working tree after the review." This lines up with the new "ultrareview" guidance added to `instruction.md`'s Session-Specific Guidance this pass (`/code-review ultra` / deprecated `/ultrareview` alias, launches a billed multi-agent cloud review).
@@ -27,6 +28,7 @@ Injected via `<system-reminder>` tags during the session, not present at system 
   - `claude-api.skill.md`
   - `workflow-authoring.skill.md`
   - `run.skill.md`
+  - `plugin-authoring.skill.md`
   - `init.skill.md`
   - `security-review.skill.md`
 
