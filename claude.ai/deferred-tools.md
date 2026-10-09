@@ -116,6 +116,7 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - "The current month is (provided in the conversation below) — use this when searching for recent information."
 - "`allowed_domains` / `blocked_domains` filter results."
 - "After answering from results, end with a "Sources:" list of the URLs you used as markdown links."
+- **[ADDED 2026-10-09]** `mode` parameter (required; enum `standard`/`extended`; `required` is now `["query","mode"]`): ""standard": the normal web search: quick and cheap; right for straightforward lookups (reference facts, official pages, documentation, well-known people, places and topics) and simple follow-up lookups. "extended": a thorough, fresh search at several times the cost and latency." Usage guidance for `mode` also appears in the system prompt (see `instruction.md` `## Web search guidance`).
 
 ## Cron Tools (CronCreate / CronDelete / CronList)
 - `CronCreate`: standard 5-field cron in user's local timezone (`minute hour day-of-month month day-of-week`); no timezone conversion needed (`"0 9 * * *"` means 9am local)

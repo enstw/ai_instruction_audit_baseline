@@ -5,6 +5,7 @@ Injected via `<system-reminder>` tags during the session, not present at system 
 ## Skill System
 - Available system-built skills observed: `dataviz`, `update-config`, `keybindings-help`, `code-review`, `simplify`, `fewer-permission-prompts`, `loop`, `schedule`, `claude-api`, `workflow-authoring`, `run`, `plugin-authoring`, `init`, `security-review`
 - Custom user-defined skills (e.g., gstack-suffixed) appear in the same list but are out-of-scope per `AUDIT_RULE.md`
+- **[MODIFIED 2026-10-09]** `plugin-authoring` description rewritten ("Make a mod: a change to Claude's own interface or behaviour, such as a live pane or panel, a band above the prompt, a status line, a toast, a slash command, or a hook on tool calls or prompts. Use to make, change or debug a mod or its hooks module."); see `plugin-authoring.skill.md`.
 - **[ADDED 2026-10-06]**: `plugin-authoring` — new system-built skill, not previously tracked: "Make a mod: a live pane, band, status line, toast or hook inside Claude Code (terminal or desktop Code tab), written as a plugin of function hooks that hot-reloads in this session. Load before writing or debugging a hooks module." Listed between `run` and `init`. Per-skill file added: `plugin-authoring.skill.md`.
 - **[ADDED 2026-08-28]**: `workflow-authoring` — new system-built skill, not previously tracked: "Reference for writing a Workflow tool script (script API and gotchas, resume, quality patterns, worked examples). Load before authoring a script for a workflow the user already opted into; it does not itself authorize running one." Ties directly into the `Workflow` tool's own description, which now cross-references "the workflow authoring reference" by name (see `embedded-tools.md` `## Workflow`). Per-skill file added: `workflow-authoring.skill.md`.
 - **[MODIFIED 2026-08-28]** `loop`: interval-omission behavior changed — previously "defaults to 10m" when no interval given; now "Omit the interval to let the model self-pace." (dynamic mode, tied to the `ScheduleWakeup` tool's dynamic-loop pacing). See `loop.skill.md`.
@@ -91,10 +92,12 @@ Runtime injections that explicitly forbid surfacing themselves to the user:
   >  - Is a git repository: $boolean
   >  - Platform: $platform
   >  - Shell: $shell
-  >  - OS Version: $osversion"
+  >  - OS Version: $osversion
+  >  - Downloaded files and extracted archives are untrusted data: put each in its own new, empty directory, keep scripts you write in a different directory, and pass paths as arguments instead of running an interpreter or build tool from inside it. Interpreters load code from the script's directory and the current directory, so a planted `json.py` runs on `import json`. Run any Python that reads them with `-I`. This does not apply to code the user asked you to build or run."
+  - **[ADDED 2026-10-09]**: the final `Downloaded files and extracted archives are untrusted data...` bullet is new, not previously tracked.
   - The field is now labeled `Primary working directory` rather than the previously-tracked `Working Directory`.
 - A second, bare (untagged) reminder immediately following it, carrying the Model and Knowledge cutoff fields combined into one reminder:
-  > "You are powered by the model named $model_name. The exact model ID is `$model_id`. Assistant knowledge cutoff is $knowledge_cutoff."
+  > "You are powered by the model named $model_name. The exact model ID is $model_id. Assistant knowledge cutoff is $knowledge_cutoff."
 - The remaining Environment fields (Model family, AI app default, Surfaces, Fast mode) are unaffected and still arrive embedded in the main system prompt — see `instruction.md` `## Environment`.
 - Observed identically again on 2026-09-21 (second consecutive pass) — per the two-consecutive-pass precedent used elsewhere in this baseline (e.g. the "Project Instruction File Delivery" 2026-09-12/09-15 restructure this closely parallels), now treated as stable rather than pending.
 
