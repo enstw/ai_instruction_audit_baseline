@@ -48,6 +48,7 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 
 ## DesignSync
 - Reads and updates the user's claude.ai/design design-system projects through their claude.ai login (or, for sessions without one, a dedicated design authorization from `/design-login`)
+- **[ADDED 2026-10-18]** "Standalone Claude Design (claude.ai/design) closes by December 14, 2026. Claude Design now lives in Claude. If the server refuses a call because standalone Claude Design or the project has closed or moved, give the user the server's message as written and stop."
 - **[MODIFIED 2026-09-24]** "Use this only with the `/design-sync` skill, which the user starts, to keep a local component library in sync with one of those projects — incrementally, one component at a time, never as a wholesale replace." Prior baseline read "Use together with the `/design-sync` skill to keep a local component library in sync with a Claude Design project — ..." — wording tightened to "only" (restrictive) and gained the "which the user starts" clause; no change to the rest of the sentence
 - Dispatches on `method`:
   - **Read methods** (no permission prompt once design scopes are granted — first call may prompt to add design-system access):
@@ -109,6 +110,7 @@ Rules from deferred tool definitions (schemas accessed via ToolSearch). Active d
 - "Fails on localhost and other hostnames without a dot; for a local server, use curl via Bash."
 - "HTTP is upgraded to HTTPS. Cross-host redirects are returned to you rather than followed; call again with the redirect URL."
 - "Responses are cached for 15 minutes per URL."
+- **[ADDED 2026-10-18]** `offset` parameter (integer, min 0): "Character position in the page text to start reading from. Use it to read on through a page too long for one call, with the value the previous result gave."
 
 ## WebSearch
 **[MODIFIED 2026-09-30]** description condensed; "CRITICAL — MUST include "Sources:"" block replaced. Live text:

@@ -51,7 +51,7 @@ Issued at session start as a standalone `<system-reminder>` (separate from the `
 
 ## Deferred-Tools Availability Reminder
 Issued at session start (and possibly again after schema fetches):
-> "The following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query 'select:<name>[,<name>...]' to load tool schemas before calling them: [list]"
+> "The following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query "select:<name>[,<name>...]" to load tool schemas before calling them: [list]"
 
 ## Token Budget Reminder
 A standalone `<system-reminder>`: bundled right after the deferred-tools/agent-types/skills reminders at session start, then recurs standalone after subsequent turns:
